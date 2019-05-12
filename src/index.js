@@ -1,12 +1,14 @@
+import _ from 'lodash'
 import Phaser from 'phaser'
-import colored from './assets/spritesheet_tiles.png'
+import spritesheet from './assets/spritesheet.png'
 import playerImg from './assets/player.png'
+import map from './assets/maps/map3.json'
 
 const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 512,
-  height: 512,
+  width: 640,
+  height: 448,
   physics: {
     default: 'arcade',
     arcade: {
@@ -25,47 +27,36 @@ const config = {
 
 const game = new Phaser.Game(config)
 let cursors
-let layer
+let worldLayer
 let player
 
 function preload() {
   this.load.image('player', playerImg)
-  this.load.image('tiles', colored)
+  this.load.image('tiles', spritesheet)
+  this.load.tilemapTiledJSON('map', map)
 }
 
 function init() {
 }
 
 function create() {
-  const level = [
-    [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11 ],
-    [ 11,   9,  11,   0,   1,   2,  11,   8,   9,  32,  11 ],
-    [ 11,   3,  58,   3,  11,   3,  11,   5,  58, 114,  11 ],
-    [ 11,   3,  10,   4,   1,   8,  11,  11,  11,  11,  11 ],
-    [ 11,   6,   1,   8,  33,  10,  11,  11,  11,  11,  11 ],
-    [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11 ],
-    [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11 ],
-    [ 11,  11,  10,  10,  10,  10,  10,  11,  11,  11, 111 ],
-    [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  32, 111 ],
-    [ 35,  36,  37,  11,  11,  11,  11,  11,  32,  32,  21 ],
-    [ 39,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ]
-  ]
-
   // When loading from an array, make sure to specify the tileWidth and tileHeight
-  const map = this.make.tilemap({ data: level, tileWidth: 64, tileHeight: 64 })
-  const tiles = map.addTilesetImage("tiles", null, 64, 64, 0, 0)
-  layer = map.createStaticLayer(0, tiles, 0, 0)
+  const map = this.make.tilemap({ key: 'map' })
+  const tiles = map.addTilesetImage('spritesheet', 'tiles')
 
-  layer.setCollision([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+  const backgroundLayer = map.createStaticLayer("Background", tiles, 0, 0)
+  worldLayer = map.createStaticLayer("World", tiles, 0, 0)
+
+  worldLayer.setCollisionBetween(0, 119)
 
   player = this.physics.add
-    .sprite(96, 96, 'player')
+    .sprite(416, 96, 'player')
     .setSize(32, 32)
     .setOffset(16, 16)
 
-  this.physics.add.collider(player, layer)
+  this.physics.add.collider(player, worldLayer)
 
-  map.setTileIndexCallback([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], levelCollisionHandler, this)
+  map.setTileIndexCallback(_.range(120), levelCollisionHandler, this)
 
   const camera = this.cameras.main
   camera.startFollow(player)
@@ -90,7 +81,7 @@ function levelCollisionHandler(player, tile) {
     if (player.body.velocity.x > 0) {
       // moving right
       // TODO: change these to properties on tiles e.g. preventRight
-      if (tile.index === 2 || tile.index === 3 || tile.index === 5 || tile.index === 7 || tile.index === 8 || tile.index === 9) {
+      if (tile.properties.preventRight) {
         // once the player's position is in the middle of the tile, player.body.setVelocity(0)
         if (player.x >= tile.pixelX + (tile.layer.tileWidth / 2)) {
           stopPlayerMovement(player, tile)
@@ -98,7 +89,7 @@ function levelCollisionHandler(player, tile) {
       }
     } else {
       // moving left
-      if (tile.index === 0 || tile.index === 3 || tile.index === 6 || tile.index === 7 || tile.index === 9 || tile.index === 10) {
+      if (tile.properties.preventLeft) {
         if (player.x <= tile.pixelX + (tile.layer.tileWidth / 2)) {
           stopPlayerMovement(player, tile)
         }
@@ -109,14 +100,14 @@ function levelCollisionHandler(player, tile) {
   } if (player.body.velocity.y) {
     if (player.body.velocity.y > 0) {
       // moving down
-      if (tile.index === 1 || tile.index === 5 || tile.index === 6 || tile.index === 7 || tile.index === 8 || tile.index === 10) {
+      if (tile.properties.preventDown) {
         if (player.y >= tile.pixelY + (tile.layer.tileHeight / 2)) {
           stopPlayerMovement(player, tile)
         }
       }
     } else {
       // moving up
-      if (tile.index === 0 || tile.index === 1 || tile.index === 2 || tile.index === 5 || tile.index === 10 || tile.index === 9) {
+      if (tile.properties.preventUp) {
         if (player.y <= tile.pixelY + (tile.layer.tileHeight / 2)) {
           stopPlayerMovement(player, tile)
         }
