@@ -2,7 +2,9 @@ import _ from 'lodash'
 import Phaser from 'phaser'
 import spritesheet from './assets/spritesheet.png'
 import playerImg from './assets/player.png'
-import map from './assets/maps/map3.json'
+
+const NUMBER_OF_LEVELS = 3
+const PLAYER_SPEED = 800; // 175
 
 const config = {
   type: Phaser.AUTO,
@@ -18,8 +20,8 @@ const config = {
     }
   },
   scene: {
-    preload,
     init,
+    preload,
     create,
     update
   }
@@ -27,30 +29,39 @@ const config = {
 
 const game = new Phaser.Game(config)
 let cursors
-let worldLayer
+let endPoint
+let level
 let player
+let worldLayer
+
+function init() {
+  let possibleNextLevel = _.random(1, NUMBER_OF_LEVELS)
+  while (possibleNextLevel === level) { // don't choose the same level twice
+    possibleNextLevel = _.random(1, NUMBER_OF_LEVELS)
+  }
+  level = possibleNextLevel
+}
 
 function preload() {
   this.load.image('player', playerImg)
   this.load.image('tiles', spritesheet)
-  this.load.tilemapTiledJSON('map', map)
-}
-
-function init() {
+  this.load.tilemapTiledJSON('map', `./src/assets/maps/map${level}.json`) // FIXME: do i need to invalidate a cache here or something?
 }
 
 function create() {
-  // When loading from an array, make sure to specify the tileWidth and tileHeight
   const map = this.make.tilemap({ key: 'map' })
   const tiles = map.addTilesetImage('spritesheet', 'tiles')
 
-  const backgroundLayer = map.createStaticLayer("Background", tiles, 0, 0)
-  worldLayer = map.createStaticLayer("World", tiles, 0, 0)
+  map.createStaticLayer('Background', tiles, 0, 0)
+  worldLayer = map.createStaticLayer('World', tiles, 0, 0)
 
   worldLayer.setCollisionBetween(0, 119)
 
+  const startPoint = map.findObject('Objects', obj => obj.name === 'Start')
+  endPoint = map.findObject('Objects', obj => obj.name === 'Finish')
+
   player = this.physics.add
-    .sprite(416, 96, 'player')
+    .sprite(startPoint.x, startPoint.y, 'player')
     .setSize(32, 32)
     .setOffset(16, 16)
 
@@ -67,13 +78,18 @@ function create() {
   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 }
 
-function stopPlayerMovement(player, tile) {
+function checkFinished(player, ctx) {
+  if (player.x === endPoint.x && player.y === endPoint.y) {
+    ctx.scene.restart()
+  }
+}
+
+function stopPlayerMovement(player, tile, ctx) {
   const newX = tile.pixelX + (tile.layer.tileWidth / 2)
   const newY = tile.pixelY + (tile.layer.tileHeight / 2)
   player.body.reset(newX, newY) // ensures player doesn't get off by sub-pixels and sets velocity to 0
-  console.log('stop!')
-  console.log(player)
-  console.log(tile)
+
+  checkFinished(player, ctx)
 }
 
 function levelCollisionHandler(player, tile) {
@@ -84,32 +100,30 @@ function levelCollisionHandler(player, tile) {
       if (tile.properties.preventRight) {
         // once the player's position is in the middle of the tile, player.body.setVelocity(0)
         if (player.x >= tile.pixelX + (tile.layer.tileWidth / 2)) {
-          stopPlayerMovement(player, tile)
+          stopPlayerMovement(player, tile, this)
         }
       }
     } else {
       // moving left
       if (tile.properties.preventLeft) {
         if (player.x <= tile.pixelX + (tile.layer.tileWidth / 2)) {
-          stopPlayerMovement(player, tile)
+          stopPlayerMovement(player, tile, this)
         }
       }
     }
-    // console.log(player)
-    // console.log(tile)
   } if (player.body.velocity.y) {
     if (player.body.velocity.y > 0) {
       // moving down
       if (tile.properties.preventDown) {
         if (player.y >= tile.pixelY + (tile.layer.tileHeight / 2)) {
-          stopPlayerMovement(player, tile)
+          stopPlayerMovement(player, tile, this)
         }
       }
     } else {
       // moving up
       if (tile.properties.preventUp) {
         if (player.y <= tile.pixelY + (tile.layer.tileHeight / 2)) {
-          stopPlayerMovement(player, tile)
+          stopPlayerMovement(player, tile, this)
         }
       }
     }
@@ -117,27 +131,22 @@ function levelCollisionHandler(player, tile) {
 }
 
 function update(time, delta) {
-  const speed = 175;
 
   if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
     // only allow the player to move once they're stopped
 
     // Horizontal movement
     if (cursors.left.isDown) {
-      player.body.setVelocityX(-speed);
+      player.body.setVelocityX(-PLAYER_SPEED);
     } else if (cursors.right.isDown) {
-      player.body.setVelocityX(speed);
+      player.body.setVelocityX(PLAYER_SPEED);
     }
 
     // Vertical movement
     else if (cursors.up.isDown) {
-      player.body.setVelocityY(-speed);
+      player.body.setVelocityY(-PLAYER_SPEED);
     } else if (cursors.down.isDown) {
-      player.body.setVelocityY(speed);
+      player.body.setVelocityY(PLAYER_SPEED);
     }
   }
 }
-
-// function gameOver() {
-//   game.restart()
-// }
