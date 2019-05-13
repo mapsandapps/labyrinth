@@ -1,14 +1,15 @@
 import _ from 'lodash'
 import Phaser from 'phaser'
 import spritesheet from './assets/spritesheet.png'
-import playerImg from './assets/player.png'
+import playerSprite from './assets/player-sprites.png'
 
-const NUMBER_OF_LEVELS = 3
-const PLAYER_SPEED = 800; // 175
+const MIN_LEVEL = 1 // for easy testing, set both these to test level
+const NUMBER_OF_LEVELS = 11
+const PLAYER_SPEED = 175
 
 const config = {
   type: Phaser.AUTO,
-  parent: 'phaser-example',
+  parent: 'game',
   width: 640,
   height: 448,
   physics: {
@@ -35,15 +36,15 @@ let player
 let worldLayer
 
 function init() {
-  let possibleNextLevel = _.random(1, NUMBER_OF_LEVELS)
+  let possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
   while (possibleNextLevel === level) { // don't choose the same level twice
-    possibleNextLevel = _.random(1, NUMBER_OF_LEVELS)
+    possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
   }
   level = possibleNextLevel
 }
 
 function preload() {
-  this.load.image('player', playerImg)
+  this.load.spritesheet('player', playerSprite, { frameWidth: 64, frameHeight: 54 })
   this.load.image('tiles', spritesheet)
   this.load.tilemapTiledJSON('map', `./src/assets/maps/map${level}.json`) // FIXME: do i need to invalidate a cache here or something?
 }
@@ -61,9 +62,48 @@ function create() {
   endPoint = map.findObject('Objects', obj => obj.name === 'Finish')
 
   player = this.physics.add
-    .sprite(startPoint.x, startPoint.y, 'player')
+    .sprite(startPoint.x, startPoint.y, 'player', 6)
     .setSize(32, 32)
     .setOffset(16, 16)
+  player.setBounce(0.2)
+
+  this.anims.create({
+    key: 'left',
+    frames: this.anims.generateFrameNumbers('player', { start: 1, end: 3 }),
+    frameRate: 10,
+    repeat: -1,
+    yoyo: true
+  })
+
+  this.anims.create({
+    key: 'right',
+    frames: this.anims.generateFrameNumbers('player', { start: 1, end: 3 }),
+    frameRate: 10,
+    repeat: -1,
+    yoyo: true
+  })
+
+  this.anims.create({
+    key: 'up',
+    frames: this.anims.generateFrameNumbers('player', { start: 7, end: 8 }),
+    frameRate: 10,
+    repeat: -1
+  })
+
+  this.anims.create({
+    key: 'down',
+    frames: this.anims.generateFrameNumbers('player', { start: 4, end: 5 }),
+    frameRate: 10,
+    repeat: -1
+  })
+
+  this.anims.create({
+    key: 'win',
+    frames: this.anims.generateFrameNumbers('player', { frames: [0, 4, 6] }),
+    frameRate: 10,
+    repeat: 3,
+    yoyo: true
+  })
 
   this.physics.add.collider(player, worldLayer)
 
@@ -80,11 +120,14 @@ function create() {
 
 function checkFinished(player, ctx) {
   if (player.x === endPoint.x && player.y === endPoint.y) {
-    ctx.scene.restart()
+    // TODO: should disable movement here
+    player.anims.play('win', true)
+    // ctx.scene.restart()
   }
 }
 
 function stopPlayerMovement(player, tile, ctx) {
+  player.anims.stop()
   const newX = tile.pixelX + (tile.layer.tileWidth / 2)
   const newY = tile.pixelY + (tile.layer.tileHeight / 2)
   player.body.reset(newX, newY) // ensures player doesn't get off by sub-pixels and sets velocity to 0
@@ -96,6 +139,7 @@ function levelCollisionHandler(player, tile) {
   if (player.body.velocity.x) {
     if (player.body.velocity.x > 0) {
       // moving right
+      player.anims.play('right', true)
       // TODO: change these to properties on tiles e.g. preventRight
       if (tile.properties.preventRight) {
         // once the player's position is in the middle of the tile, player.body.setVelocity(0)
@@ -105,6 +149,7 @@ function levelCollisionHandler(player, tile) {
       }
     } else {
       // moving left
+      player.anims.play('left', true)
       if (tile.properties.preventLeft) {
         if (player.x <= tile.pixelX + (tile.layer.tileWidth / 2)) {
           stopPlayerMovement(player, tile, this)
@@ -114,6 +159,7 @@ function levelCollisionHandler(player, tile) {
   } if (player.body.velocity.y) {
     if (player.body.velocity.y > 0) {
       // moving down
+      player.anims.play('down', true)
       if (tile.properties.preventDown) {
         if (player.y >= tile.pixelY + (tile.layer.tileHeight / 2)) {
           stopPlayerMovement(player, tile, this)
@@ -121,6 +167,7 @@ function levelCollisionHandler(player, tile) {
       }
     } else {
       // moving up
+      player.anims.play('up', true)
       if (tile.properties.preventUp) {
         if (player.y <= tile.pixelY + (tile.layer.tileHeight / 2)) {
           stopPlayerMovement(player, tile, this)
@@ -131,7 +178,6 @@ function levelCollisionHandler(player, tile) {
 }
 
 function update(time, delta) {
-
   if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
     // only allow the player to move once they're stopped
 
