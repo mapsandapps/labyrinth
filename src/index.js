@@ -5,7 +5,7 @@ import playerSprite from './assets/player-sprites.png'
 
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
 const NUMBER_OF_LEVELS = 12
-const PLAYER_SPEED = 175
+const PLAYER_SPEED = 250
 
 const config = {
   type: Phaser.AUTO,
