@@ -4,7 +4,7 @@ import spritesheet from './assets/spritesheet.png'
 import playerSprite from './assets/player-sprites.png'
 
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
-const NUMBER_OF_LEVELS = 11
+const NUMBER_OF_LEVELS = 12
 const PLAYER_SPEED = 175
 
 const config = {
@@ -37,20 +37,20 @@ let worldLayer
 
 function init() {
   let possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
-  while (possibleNextLevel === level) { // don't choose the same level twice
+  while (`map${possibleNextLevel}` === level) { // don't choose the same level twice
     possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
   }
-  level = possibleNextLevel
+  level = `map${possibleNextLevel}`
 }
 
 function preload() {
   this.load.spritesheet('player', playerSprite, { frameWidth: 64, frameHeight: 54 })
   this.load.image('tiles', spritesheet)
-  this.load.tilemapTiledJSON('map', `./src/assets/maps/map${level}.json`) // FIXME: do i need to invalidate a cache here or something?
+  this.load.tilemapTiledJSON(level, `./src/assets/maps/${level}.json`)
 }
 
 function create() {
-  const map = this.make.tilemap({ key: 'map' })
+  const map = this.make.tilemap({ key: level })
   const tiles = map.addTilesetImage('spritesheet', 'tiles')
 
   map.createStaticLayer('Background', tiles, 0, 0)
@@ -122,7 +122,10 @@ function checkFinished(player, ctx) {
   if (player.x === endPoint.x && player.y === endPoint.y) {
     // TODO: should disable movement here
     player.anims.play('win', true)
-    // ctx.scene.restart()
+    ctx.time.addEvent({
+      delay: 2000,
+      callback: () => ctx.scene.restart()
+    })
   }
 }
 
@@ -178,6 +181,9 @@ function levelCollisionHandler(player, tile) {
 }
 
 function update(time, delta) {
+  if (!player || !player.body) {
+    return // when starting a new level, update fires before create
+  }
   if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
     // only allow the player to move once they're stopped
 
