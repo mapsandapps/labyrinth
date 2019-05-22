@@ -1,11 +1,12 @@
 import _ from 'lodash'
 import Phaser from 'phaser'
-import spritesheet from './assets/spritesheet.png'
 import playerSprite from './assets/player-sprites.png'
+import spritesheet from './assets/green-on-blue.png'
 
-const MIN_LEVEL = 1 // for easy testing, set both these to test level
-const NUMBER_OF_LEVELS = 12
+const MIN_LEVEL = 13 // for easy testing, set both these to test level
+const NUMBER_OF_LEVELS = 13
 const PLAYER_SPEED = 250
+const TRAIL_TILE = 16
 
 const config = {
   type: Phaser.AUTO,
@@ -31,29 +32,38 @@ const config = {
 const game = new Phaser.Game(config)
 let cursors
 let endPoint
+let lastTileCollidedWith
+let lastTileEntered
 let level
 let player
+let visitedLayer
 let worldLayer
 
 function init() {
   let possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
-  while (`map${possibleNextLevel}` === level) { // don't choose the same level twice
-    possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
+  if (NUMBER_OF_LEVELS === MIN_LEVEL) {
+    // only one level to pick from
+    level = `map${MIN_LEVEL}`
+  } else {
+    while (`map${possibleNextLevel}` === level) { // don't choose the same level twice
+      possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
+    }
+    level = `map${possibleNextLevel}`
   }
-  level = `map${possibleNextLevel}`
 }
 
 function preload() {
-  this.load.spritesheet('player', playerSprite, { frameWidth: 64, frameHeight: 54 })
-  this.load.image('tiles', spritesheet)
+  this.load.spritesheet('player', playerSprite, { frameWidth: 32, frameHeight: 32 })
+  this.load.image('green-on-blue', spritesheet)
   this.load.tilemapTiledJSON(level, `./src/assets/maps/${level}.json`)
 }
 
 function create() {
   const map = this.make.tilemap({ key: level })
-  const tiles = map.addTilesetImage('spritesheet', 'tiles')
+  const tiles = map.addTilesetImage('green-on-blue', 'green-on-blue')
 
   map.createStaticLayer('Background', tiles, 0, 0)
+  visitedLayer = map.createBlankDynamicLayer('Visited', tiles, 0, 0)
   worldLayer = map.createStaticLayer('World', tiles, 0, 0)
 
   worldLayer.setCollisionBetween(0, 119)
@@ -62,44 +72,42 @@ function create() {
   endPoint = map.findObject('Objects', obj => obj.name === 'Finish')
 
   player = this.physics.add
-    .sprite(startPoint.x, startPoint.y, 'player', 6)
+    .sprite(startPoint.x, startPoint.y, 'player', 3)
     .setSize(32, 32)
     .setOffset(16, 16)
   player.setBounce(0.2)
 
   this.anims.create({
     key: 'left',
-    frames: this.anims.generateFrameNumbers('player', { start: 1, end: 3 }),
+    frames: this.anims.generateFrameNumbers('player', { frames: [12, 13, 12, 14] }),
     frameRate: 10,
-    repeat: -1,
-    yoyo: true
+    repeat: -1
   })
 
   this.anims.create({
     key: 'right',
-    frames: this.anims.generateFrameNumbers('player', { start: 1, end: 3 }),
+    frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 6, 8] }),
     frameRate: 10,
-    repeat: -1,
-    yoyo: true
+    repeat: -1
   })
 
   this.anims.create({
     key: 'up',
-    frames: this.anims.generateFrameNumbers('player', { start: 7, end: 8 }),
+    frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 3, 5] }),
     frameRate: 10,
     repeat: -1
   })
 
   this.anims.create({
     key: 'down',
-    frames: this.anims.generateFrameNumbers('player', { start: 4, end: 5 }),
+    frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 9, 11] }),
     frameRate: 10,
     repeat: -1
   })
 
   this.anims.create({
     key: 'win',
-    frames: this.anims.generateFrameNumbers('player', { frames: [0, 4, 6] }),
+    frames: this.anims.generateFrameNumbers('player', { frames: [1, 2] }),
     frameRate: 10,
     repeat: 3,
     yoyo: true
@@ -107,7 +115,7 @@ function create() {
 
   this.physics.add.collider(player, worldLayer)
 
-  map.setTileIndexCallback(_.range(120), levelCollisionHandler, this)
+  map.setTileIndexCallback(_.range(120), levelCollisionHandler, this, worldLayer)
 
   const camera = this.cameras.main
   camera.startFollow(player)
@@ -138,44 +146,62 @@ function stopPlayerMovement(player, tile, ctx) {
   checkFinished(player, ctx)
 }
 
+function enteringTile(tile, direction) {
+  lastTileEntered = tile
+
+  visitedLayer.putTileAt(TRAIL_TILE, tile.x, tile.y)
+}
+
+function collidingWithTile(tile, direction) {
+  // if it collides with the same tile twice in a row, it's _only_ over that tile
+  // TODO: instead, possibly see when it's passed the midpoint
+  // swap if-statement order in levelCollisionHandler()
+  if (!lastTileCollidedWith || !lastTileEntered) {
+    enteringTile(tile, direction)
+  } else if (tile.x === lastTileCollidedWith.x && tile.y === lastTileCollidedWith.y && !(tile.x === lastTileEntered.x && tile.y === lastTileEntered.y)) {
+    enteringTile(tile, direction)
+  }
+
+  lastTileCollidedWith = tile
+}
+
 function levelCollisionHandler(player, tile) {
   if (player.body.velocity.x) {
     if (player.body.velocity.x > 0) {
       // moving right
-      player.anims.play('right', true)
-      // TODO: change these to properties on tiles e.g. preventRight
       if (tile.properties.preventRight) {
         // once the player's position is in the middle of the tile, player.body.setVelocity(0)
         if (player.x >= tile.pixelX + (tile.layer.tileWidth / 2)) {
           stopPlayerMovement(player, tile, this)
         }
       }
+      collidingWithTile(tile, { x: 1, y: 0 })
     } else {
       // moving left
-      player.anims.play('left', true)
       if (tile.properties.preventLeft) {
         if (player.x <= tile.pixelX + (tile.layer.tileWidth / 2)) {
           stopPlayerMovement(player, tile, this)
         }
       }
+      collidingWithTile(tile, { x: -1, y: 0 })
     }
   } if (player.body.velocity.y) {
     if (player.body.velocity.y > 0) {
       // moving down
-      player.anims.play('down', true)
       if (tile.properties.preventDown) {
         if (player.y >= tile.pixelY + (tile.layer.tileHeight / 2)) {
           stopPlayerMovement(player, tile, this)
         }
       }
+      collidingWithTile(tile, { x: 0, y: 1 })
     } else {
       // moving up
-      player.anims.play('up', true)
       if (tile.properties.preventUp) {
         if (player.y <= tile.pixelY + (tile.layer.tileHeight / 2)) {
           stopPlayerMovement(player, tile, this)
         }
       }
+      collidingWithTile(tile, { x: 0, y: -1 })
     }
   }
 }
@@ -190,15 +216,19 @@ function update(time, delta) {
     // Horizontal movement
     if (cursors.left.isDown) {
       player.body.setVelocityX(-PLAYER_SPEED);
+      player.anims.play('left', true)
     } else if (cursors.right.isDown) {
       player.body.setVelocityX(PLAYER_SPEED);
+      player.anims.play('right', true)
     }
 
     // Vertical movement
     else if (cursors.up.isDown) {
       player.body.setVelocityY(-PLAYER_SPEED);
+      player.anims.play('up', true)
     } else if (cursors.down.isDown) {
       player.body.setVelocityY(PLAYER_SPEED);
+      player.anims.play('down', true)
     }
   }
 }
