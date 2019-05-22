@@ -153,12 +153,11 @@ function enteringTile(tile, direction) {
 }
 
 function collidingWithTile(tile, direction) {
-  // if it collides with the same tile twice in a row, it's _only_ over that tile
-  // TODO: instead, possibly see when it's passed the midpoint
-  // swap if-statement order in levelCollisionHandler()
   if (!lastTileCollidedWith || !lastTileEntered) {
+    // first tile
     enteringTile(tile, direction)
-  } else if (tile.x === lastTileCollidedWith.x && tile.y === lastTileCollidedWith.y && !(tile.x === lastTileEntered.x && tile.y === lastTileEntered.y)) {
+  } else if (!(tile.x === lastTileEntered.x && tile.y === lastTileEntered.y)) {
+    // new tile
     enteringTile(tile, direction)
   }
 
@@ -169,39 +168,39 @@ function levelCollisionHandler(player, tile) {
   if (player.body.velocity.x) {
     if (player.body.velocity.x > 0) {
       // moving right
-      if (tile.properties.preventRight) {
+      if (player.x >= tile.pixelX + (tile.layer.tileWidth / 2)) {
+        collidingWithTile(tile, { x: 1, y: 0 })
+        if (tile.properties.preventRight) {
         // once the player's position is in the middle of the tile, player.body.setVelocity(0)
-        if (player.x >= tile.pixelX + (tile.layer.tileWidth / 2)) {
           stopPlayerMovement(player, tile, this)
         }
       }
-      collidingWithTile(tile, { x: 1, y: 0 })
     } else {
       // moving left
-      if (tile.properties.preventLeft) {
-        if (player.x <= tile.pixelX + (tile.layer.tileWidth / 2)) {
+      if (player.x <= tile.pixelX + (tile.layer.tileWidth / 2)) {
+        collidingWithTile(tile, { x: -1, y: 0 })
+        if (tile.properties.preventLeft) {
           stopPlayerMovement(player, tile, this)
         }
       }
-      collidingWithTile(tile, { x: -1, y: 0 })
     }
   } if (player.body.velocity.y) {
     if (player.body.velocity.y > 0) {
       // moving down
-      if (tile.properties.preventDown) {
-        if (player.y >= tile.pixelY + (tile.layer.tileHeight / 2)) {
+      if (player.y >= tile.pixelY + (tile.layer.tileHeight / 2)) {
+        collidingWithTile(tile, { x: 0, y: 1 })
+        if (tile.properties.preventDown) {
           stopPlayerMovement(player, tile, this)
         }
       }
-      collidingWithTile(tile, { x: 0, y: 1 })
     } else {
       // moving up
-      if (tile.properties.preventUp) {
-        if (player.y <= tile.pixelY + (tile.layer.tileHeight / 2)) {
+      if (player.y <= tile.pixelY + (tile.layer.tileHeight / 2)) {
+        collidingWithTile(tile, { x: 0, y: -1 })
+        if (tile.properties.preventUp) {
           stopPlayerMovement(player, tile, this)
         }
       }
-      collidingWithTile(tile, { x: 0, y: -1 })
     }
   }
 }
