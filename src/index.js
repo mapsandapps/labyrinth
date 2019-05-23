@@ -6,7 +6,7 @@ import spritesheet from './assets/green-on-blue.png'
 const MIN_LEVEL = 13 // for easy testing, set both these to test level
 const NUMBER_OF_LEVELS = 13
 const PLAYER_SPEED = 250
-const TRAIL_TILE = 16
+const TRAIL_TILE = 10
 
 const config = {
   type: Phaser.AUTO,
@@ -150,6 +150,9 @@ function enteringTile(tile, direction) {
   lastTileEntered = tile
 
   visitedLayer.putTileAt(TRAIL_TILE, tile.x, tile.y)
+  const tileJustPlaced = visitedLayer.getTileAt(tile.x, tile.y)
+  console.log(tileJustPlaced)
+  tileJustPlaced.tint = 0x026FEB
 }
 
 function collidingWithTile(tile, direction) {
