@@ -3,13 +3,14 @@ import Phaser from 'phaser'
 
 import dirt from './assets/dirt.png'
 import flame from './assets/flame-quarter-size.png'
+import footprints from './assets/footprints.png'
 import playerSprite from './assets/player-sprites.png'
 import spritesheet from './assets/spritesheet.png'
 
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
 const MAX_LEVEL = 12
 const PLAYER_SPEED = 200 // 250 or less
-const TRAIL_STYLE = 'particle'
+const TRAIL_STYLE = 'footprints'
 
 const config = {
   type: Phaser.AUTO,
@@ -34,10 +35,10 @@ const config = {
 
 const game = new Phaser.Game(config)
 let cursors
-let emitter
 let endPoint
 let lastTileCollidedWith
 let lastTileEntered
+let leftFoot, rightFoot
 let level
 let player
 let visitedLayer
@@ -54,15 +55,24 @@ function init() {
     }
     level = `map${possibleNextLevel}`
   }
+  console.log(`using level ${level}`)
 }
 
 function preload() {
-  this.load.spritesheet('player', playerSprite, { frameWidth: 32, frameHeight: 32 })
+  this.load.spritesheet('player', playerSprite, {
+    frameWidth: 32,
+    frameHeight: 32
+  })
   this.load.image('spritesheet', spritesheet)
   this.load.tilemapTiledJSON(level, `./src/assets/maps/${level}.json`)
 
   if (TRAIL_STYLE === 'particle') {
     this.load.image('flame', flame)
+  } else if (TRAIL_STYLE === 'footprints') {
+    this.load.spritesheet('footprints', footprints, {
+      frameWidth: 16,
+      frameHeight: 16
+    })
   }
 }
 
@@ -79,20 +89,42 @@ function create() {
   const startPoint = map.findObject('Objects', obj => obj.name === 'Start')
   endPoint = map.findObject('Objects', obj => obj.name === 'Finish')
 
-  player = this.physics.add
-    .sprite(startPoint.x, startPoint.y, 'player', 3)
-    .setSize(32, 32)
-    .setOffset(16, 16)
-  player.setBounce(0.2)
+  if (TRAIL_STYLE === 'footprints') {
+    var particles = this.add.particles('footprints')
 
-  if (TRAIL_STYLE === 'particle') {
-    var particles = this.add.particles('flame')
-    emitter = particles.createEmitter()
+    const initialEmitterConfig = {
+      blendMode: 'ADD', // ADD, MULTIPLY, SCREEN, ERASE
+      frame: 0,
+      frequency: 200,
+      lifespan: {
+        min: 500,
+        max: 1000
+      },
+      quantity: 1,
+      speed: 0,
+      tint: [ 0xffff00, 0xff0000, 0x00ff00, 0x0000ff ]
+    }
 
-    emitter.startFollow(player)
-    emitter.setScale(0.2)
-    emitter.setSpeed(50)
-    emitter.setBlendMode(Phaser.BlendModes.ADD)
+    leftFoot = particles.createEmitter({ ...initialEmitterConfig,
+      x: -8,
+      y: -8
+    })
+
+    rightFoot = particles.createEmitter({ ...initialEmitterConfig,
+      x: 8,
+      y: 8
+    })
+
+    player = this.physics.add
+      .sprite(startPoint.x, startPoint.y, 'player', 3)
+      .setSize(32, 32)
+      .setOffset(16, 16)
+    player.setBounce(0.2)
+
+    leftFoot.startFollow(player)
+    rightFoot.startFollow(player)
+    leftFoot.stop()
+    rightFoot.stop()
   }
 
   this.anims.create({
@@ -157,8 +189,9 @@ function checkFinished(player, ctx) {
 
 function stopPlayerMovement(player, tile, ctx) {
   player.anims.stop()
-  if (TRAIL_STYLE === 'particle') {
-    emitter.stop()
+  if (TRAIL_STYLE === 'footprints') {
+    leftFoot.stop()
+    rightFoot.stop()
   }
 
   const newX = tile.pixelX + (tile.layer.tileWidth / 2)
@@ -244,21 +277,30 @@ function levelCollisionHandler(player, tile) {
 }
 
 function movePlayer(direction) {
+  let leftFootFrame
+
   if (direction === 'left') {
     player.body.setVelocityX(-PLAYER_SPEED)
+    leftFootFrame = 6
   } else if (direction === 'right') {
     player.body.setVelocityX(PLAYER_SPEED)
+    leftFootFrame = 2
   } else if (direction === 'up') {
     player.body.setVelocityY(-PLAYER_SPEED)
+    leftFootFrame = 0
   } else if (direction === 'down') {
     player.body.setVelocityY(PLAYER_SPEED)
+    leftFootFrame = 4
+  }
+
+  if (TRAIL_STYLE === 'footprints') {
+    leftFoot.setFrame(leftFootFrame)
+    rightFoot.setFrame(leftFootFrame + 1)
+    leftFoot.start()
+    rightFoot.start()
   }
 
   player.anims.play(direction, true)
-
-  if (TRAIL_STYLE === 'particle') {
-    emitter.start()
-  }
 }
 
 function update(time, delta) {
