@@ -7,10 +7,11 @@ import footprints from './assets/footprints.png'
 import playerSprite from './assets/player-sprites.png'
 import spritesheet from './assets/spritesheet.png'
 
+const EMITTER_SPREAD = 90
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
 const MAX_LEVEL = 12
 const PLAYER_SPEED = 200 // 250 or less
-const TRAIL_STYLE = 'footprints'
+const TRAIL_STYLE = 'footprints' // color, footprints, particles
 
 const config = {
   type: Phaser.AUTO,
@@ -35,6 +36,7 @@ const config = {
 
 const game = new Phaser.Game(config)
 let cursors
+let emitter
 let endPoint
 let lastTileCollidedWith
 let lastTileEntered
@@ -66,7 +68,7 @@ function preload() {
   this.load.image('spritesheet', spritesheet)
   this.load.tilemapTiledJSON(level, `./src/assets/maps/${level}.json`)
 
-  if (TRAIL_STYLE === 'particle') {
+  if (TRAIL_STYLE === 'particles') {
     this.load.image('flame', flame)
   } else if (TRAIL_STYLE === 'footprints') {
     this.load.spritesheet('footprints', footprints, {
@@ -114,17 +116,37 @@ function create() {
       x: 8,
       y: 8
     })
+  } else if (TRAIL_STYLE === 'particles') {
+    var particles = this.add.particles('flame')
 
-    player = this.physics.add
-      .sprite(startPoint.x, startPoint.y, 'player', 3)
-      .setSize(32, 32)
-      .setOffset(16, 16)
-    player.setBounce(0.2)
+    emitter = particles.createEmitter({
+      blendMode: 'ADD',
+      frequency: 0,
+      lifespan: {
+        min: 500,
+        max: 1000
+      },
+      quantity: 1,
+      scale: 0.1,
+      speed: 50,
+      tint: [ 0xffff00, 0xff0000, 0x00ff00, 0x0000ff ]
+    })
+  }
 
+  player = this.physics.add
+    .sprite(startPoint.x, startPoint.y, 'player', 3)
+    .setSize(32, 32)
+    .setOffset(16, 16)
+  player.setBounce(0.2)
+
+  if (TRAIL_STYLE === 'footprints') {
     leftFoot.startFollow(player)
     rightFoot.startFollow(player)
     leftFoot.stop()
     rightFoot.stop()
+  } else if (TRAIL_STYLE === 'particles') {
+    emitter.startFollow(player)
+    emitter.stop()
   }
 
   this.anims.create({
@@ -192,6 +214,8 @@ function stopPlayerMovement(player, tile, ctx) {
   if (TRAIL_STYLE === 'footprints') {
     leftFoot.stop()
     rightFoot.stop()
+  } else if (TRAIL_STYLE === 'particles') {
+    emitter.stop()
   }
 
   const newX = tile.pixelX + (tile.layer.tileWidth / 2)
@@ -278,19 +302,24 @@ function levelCollisionHandler(player, tile) {
 
 function movePlayer(direction) {
   let leftFootFrame
+  let emitterDirection
 
   if (direction === 'left') {
     player.body.setVelocityX(-PLAYER_SPEED)
     leftFootFrame = 6
+    emitterDirection = 0
   } else if (direction === 'right') {
     player.body.setVelocityX(PLAYER_SPEED)
     leftFootFrame = 2
+    emitterDirection = 180
   } else if (direction === 'up') {
     player.body.setVelocityY(-PLAYER_SPEED)
     leftFootFrame = 0
+    emitterDirection = 90
   } else if (direction === 'down') {
     player.body.setVelocityY(PLAYER_SPEED)
     leftFootFrame = 4
+    emitterDirection = 270
   }
 
   if (TRAIL_STYLE === 'footprints') {
@@ -298,6 +327,12 @@ function movePlayer(direction) {
     rightFoot.setFrame(leftFootFrame + 1)
     leftFoot.start()
     rightFoot.start()
+  } else if (TRAIL_STYLE === 'particles') {
+    emitter.setAngle({
+      min: emitterDirection - EMITTER_SPREAD / 2,
+      max: emitterDirection + EMITTER_SPREAD / 2
+    })
+    emitter.start()
   }
 
   player.anims.play(direction, true)
