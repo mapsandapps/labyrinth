@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import Phaser from 'phaser'
 
-import dirt from './assets/dirt.png'
 import flame from './assets/flame-quarter-size.png'
 import footprints from './assets/footprints.png'
 import playerSprite from './assets/player-sprites.png'
@@ -95,7 +94,8 @@ function create() {
     var particles = this.add.particles('footprints')
 
     const initialEmitterConfig = {
-      blendMode: 'ADD', // ADD, MULTIPLY, SCREEN, ERASE
+      alpha: 0.3,
+      blendMode: 'MULTIPLY', // ADD, MULTIPLY, SCREEN, ERASE
       frame: 0,
       frequency: 200,
       lifespan: {
@@ -104,7 +104,7 @@ function create() {
       },
       quantity: 1,
       speed: 0,
-      tint: [ 0xffff00, 0xff0000, 0x00ff00, 0x0000ff ]
+      tint: 0x000000
     }
 
     leftFoot = particles.createEmitter({ ...initialEmitterConfig,
@@ -194,6 +194,8 @@ function create() {
   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 
   cursors = this.input.keyboard.createCursorKeys()
+
+  this.input.on('pointerup', endSwipe, this)
 
   camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 }
@@ -357,6 +359,30 @@ function update(time, delta) {
       movePlayer('up')
     } else if (cursors.down.isDown) {
       movePlayer('down')
+    }
+  }
+}
+
+function endSwipe(e) {
+  // with credit to https://www.emanueleferonato.com/2018/02/09/phaser-3-version-of-the-html5-swipe-controlled-sokoban-game/
+  if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+    var swipeTime = e.upTime - e.downTime;
+    var swipe = new Phaser.Geom.Point(e.upX - e.downX, e.upY - e.downY);
+    var swipeMagnitude = Phaser.Geom.Point.GetMagnitude(swipe);
+    var swipeNormal = new Phaser.Geom.Point(swipe.x / swipeMagnitude, swipe.y / swipeMagnitude);
+    if(swipeMagnitude > 20 && swipeTime < 1000 && (Math.abs(swipeNormal.y) > 0.8 || Math.abs(swipeNormal.x) > 0.8)) {
+      if(swipeNormal.x > 0.8) {
+        movePlayer('right')
+      }
+      if(swipeNormal.x < -0.8) {
+        movePlayer('left')
+      }
+      if(swipeNormal.y > 0.8) {
+        movePlayer('down')
+      }
+      if(swipeNormal.y < -0.8) {
+        movePlayer('up')
+      }
     }
   }
 }
