@@ -1,12 +1,15 @@
 import _ from 'lodash'
 import Phaser from 'phaser'
-import playerSprite from './assets/player-sprites.png'
-import spritesheet from './assets/green-on-blue.png'
 
-const MIN_LEVEL = 13 // for easy testing, set both these to test level
-const NUMBER_OF_LEVELS = 13
-const PLAYER_SPEED = 250
-const TRAIL_TILE = 10
+import dirt from './assets/dirt.png'
+import flame from './assets/flame-quarter-size.png'
+import playerSprite from './assets/player-sprites.png'
+import spritesheet from './assets/spritesheet.png'
+
+const MIN_LEVEL = 1 // for easy testing, set both these to test level
+const MAX_LEVEL = 12
+const PLAYER_SPEED = 200 // 250 or less
+const TRAIL_STYLE = 'particle'
 
 const config = {
   type: Phaser.AUTO,
@@ -31,6 +34,7 @@ const config = {
 
 const game = new Phaser.Game(config)
 let cursors
+let emitter
 let endPoint
 let lastTileCollidedWith
 let lastTileEntered
@@ -40,13 +44,13 @@ let visitedLayer
 let worldLayer
 
 function init() {
-  let possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
-  if (NUMBER_OF_LEVELS === MIN_LEVEL) {
+  let possibleNextLevel = _.random(MIN_LEVEL, MAX_LEVEL)
+  if (MAX_LEVEL === MIN_LEVEL) {
     // only one level to pick from
     level = `map${MIN_LEVEL}`
   } else {
     while (`map${possibleNextLevel}` === level) { // don't choose the same level twice
-      possibleNextLevel = _.random(MIN_LEVEL, NUMBER_OF_LEVELS)
+      possibleNextLevel = _.random(MIN_LEVEL, MAX_LEVEL)
     }
     level = `map${possibleNextLevel}`
   }
@@ -54,19 +58,23 @@ function init() {
 
 function preload() {
   this.load.spritesheet('player', playerSprite, { frameWidth: 32, frameHeight: 32 })
-  this.load.image('green-on-blue', spritesheet)
+  this.load.image('spritesheet', spritesheet)
   this.load.tilemapTiledJSON(level, `./src/assets/maps/${level}.json`)
+
+  if (TRAIL_STYLE === 'particle') {
+    this.load.image('flame', flame)
+  }
 }
 
 function create() {
   const map = this.make.tilemap({ key: level })
-  const tiles = map.addTilesetImage('green-on-blue', 'green-on-blue')
+  const tiles = map.addTilesetImage('spritesheet', 'spritesheet')
 
   map.createStaticLayer('Background', tiles, 0, 0)
-  visitedLayer = map.createBlankDynamicLayer('Visited', tiles, 0, 0)
   worldLayer = map.createStaticLayer('World', tiles, 0, 0)
 
   worldLayer.setCollisionBetween(0, 119)
+  visitedLayer = map.createBlankDynamicLayer('Visited', tiles, 0, 0)
 
   const startPoint = map.findObject('Objects', obj => obj.name === 'Start')
   endPoint = map.findObject('Objects', obj => obj.name === 'Finish')
@@ -76,6 +84,16 @@ function create() {
     .setSize(32, 32)
     .setOffset(16, 16)
   player.setBounce(0.2)
+
+  if (TRAIL_STYLE === 'particle') {
+    var particles = this.add.particles('flame')
+    emitter = particles.createEmitter()
+
+    emitter.startFollow(player)
+    emitter.setScale(0.2)
+    emitter.setSpeed(50)
+    emitter.setBlendMode(Phaser.BlendModes.ADD)
+  }
 
   this.anims.create({
     key: 'left',
@@ -139,6 +157,10 @@ function checkFinished(player, ctx) {
 
 function stopPlayerMovement(player, tile, ctx) {
   player.anims.stop()
+  if (TRAIL_STYLE === 'particle') {
+    emitter.stop()
+  }
+
   const newX = tile.pixelX + (tile.layer.tileWidth / 2)
   const newY = tile.pixelY + (tile.layer.tileHeight / 2)
   player.body.reset(newX, newY) // ensures player doesn't get off by sub-pixels and sets velocity to 0
@@ -146,13 +168,26 @@ function stopPlayerMovement(player, tile, ctx) {
   checkFinished(player, ctx)
 }
 
+function plopDownColor(tile) {
+  let newTileIndex = 1
+  if (tile.index >= 14 && tile.index <= 24) {
+    newTileIndex = tile.index + (9 * 12)
+  } else if (tile.index >= 26 && tile.index <= 60) {
+    newTileIndex = tile.index % 12 + (11 * 12)
+  } else if (tile.index >= 62 && tile.index <= 96) {
+    newTileIndex = tile.index % 12 + (12 * 12)
+  }
+  visitedLayer.putTileAt(newTileIndex, tile.x, tile.y)
+  const tileJustPlaced = visitedLayer.getTileAt(tile.x, tile.y)
+  tileJustPlaced.tint = 0x026FEB
+}
+
 function enteringTile(tile, direction) {
   lastTileEntered = tile
 
-  visitedLayer.putTileAt(TRAIL_TILE, tile.x, tile.y)
-  const tileJustPlaced = visitedLayer.getTileAt(tile.x, tile.y)
-  console.log(tileJustPlaced)
-  tileJustPlaced.tint = 0x026FEB
+  if (TRAIL_STYLE === 'color') {
+    plopDownColor(tile)
+  }
 }
 
 function collidingWithTile(tile, direction) {
@@ -208,6 +243,24 @@ function levelCollisionHandler(player, tile) {
   }
 }
 
+function movePlayer(direction) {
+  if (direction === 'left') {
+    player.body.setVelocityX(-PLAYER_SPEED)
+  } else if (direction === 'right') {
+    player.body.setVelocityX(PLAYER_SPEED)
+  } else if (direction === 'up') {
+    player.body.setVelocityY(-PLAYER_SPEED)
+  } else if (direction === 'down') {
+    player.body.setVelocityY(PLAYER_SPEED)
+  }
+
+  player.anims.play(direction, true)
+
+  if (TRAIL_STYLE === 'particle') {
+    emitter.start()
+  }
+}
+
 function update(time, delta) {
   if (!player || !player.body) {
     return // when starting a new level, update fires before create
@@ -217,20 +270,16 @@ function update(time, delta) {
 
     // Horizontal movement
     if (cursors.left.isDown) {
-      player.body.setVelocityX(-PLAYER_SPEED);
-      player.anims.play('left', true)
+      movePlayer('left')
     } else if (cursors.right.isDown) {
-      player.body.setVelocityX(PLAYER_SPEED);
-      player.anims.play('right', true)
+      movePlayer('right')
     }
 
     // Vertical movement
     else if (cursors.up.isDown) {
-      player.body.setVelocityY(-PLAYER_SPEED);
-      player.anims.play('up', true)
+      movePlayer('up')
     } else if (cursors.down.isDown) {
-      player.body.setVelocityY(PLAYER_SPEED);
-      player.anims.play('down', true)
+      movePlayer('down')
     }
   }
 }
