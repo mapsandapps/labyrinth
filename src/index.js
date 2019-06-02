@@ -1,3 +1,6 @@
+import './reset.css'
+import './index.css'
+
 import _ from 'lodash'
 import Phaser from 'phaser'
 
