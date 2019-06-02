@@ -4,13 +4,13 @@ import Phaser from 'phaser'
 import flame from './assets/flame-quarter-size.png'
 import footprints from './assets/footprints.png'
 import playerSprite from './assets/player-sprites.png'
-import spritesheet from './assets/spritesheet.png'
+import spritesheet from './assets/spritesheet-extruded.png'
 
 const EMITTER_SPREAD = 90
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
 const MAX_LEVEL = 12
 const PLAYER_SPEED = 200 // 250 or less
-const TRAIL_STYLE = 'footprints' // color, footprints, particles
+const TRAIL_STYLE = 'particles' // color, footprints, particles
 
 let mobileSized = window.innerWidth < 640
 
@@ -81,7 +81,7 @@ function preload() {
 
 function create() {
   const map = this.make.tilemap({ key: level })
-  const tiles = map.addTilesetImage('spritesheet', 'spritesheet')
+  const tiles = map.addTilesetImage('spritesheet', 'spritesheet', 64, 64, 1, 2)
 
   map.createStaticLayer('Background', tiles, 0, 0)
   worldLayer = map.createStaticLayer('World', tiles, 0, 0)
@@ -131,7 +131,7 @@ function create() {
       quantity: 1,
       scale: 0.1,
       speed: 50,
-      tint: [ 0xffff00, 0xff0000, 0x00ff00, 0x0000ff ]
+      tint: [ 0xe30c0c, 0xff8c07, 0xffee03, 0x08832b, 0x0150fe, 0x750488 ]
     })
   }
 
