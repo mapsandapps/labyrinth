@@ -12,11 +12,13 @@ const MAX_LEVEL = 12
 const PLAYER_SPEED = 200 // 250 or less
 const TRAIL_STYLE = 'footprints' // color, footprints, particles
 
+let mobileSized = window.innerWidth < 640
+
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: 640,
-  height: 448,
+  width: mobileSized ?  window.innerWidth : 640,
+  height: mobileSized ? window.innerHeight : 448,
   physics: {
     default: 'arcade',
     arcade: {
