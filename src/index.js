@@ -11,7 +11,7 @@ import spritesheet from './assets/spritesheet-extruded.png'
 
 const EMITTER_SPREAD = 90
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
-const MAX_LEVEL = 12
+const MAX_LEVEL = 15
 const PLAYER_SPEED = 200 // 250 or less
 const TRAIL_STYLE = 'particles' // color, footprints, particles
 
