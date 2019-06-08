@@ -35,6 +35,7 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin([
+      { from: 'src/assets/backgrounds', to: 'src/assets/backgrounds' },
       { from: 'src/assets/maps', to: 'src/assets/maps' }
     ]),
     new CleanWebpackPlugin(["dist"], {
