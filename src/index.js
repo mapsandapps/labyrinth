@@ -9,6 +9,8 @@ import footprints from './assets/footprints.png'
 import playerSprite from './assets/player-sprites.png'
 import spritesheet from './assets/spritesheet-extruded.png'
 
+import backgrounds from './backgrounds.json'
+
 const EMITTER_SPREAD = 90
 const MIN_LEVEL = 1 // for easy testing, set both these to test level
 const MAX_LEVEL = 15
@@ -20,7 +22,7 @@ let mobileSized = window.innerWidth < 640
 const config = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: mobileSized ?  window.innerWidth : 640,
+  width: mobileSized ? window.innerWidth : 640,
   height: mobileSized ? window.innerHeight : 448,
   physics: {
     default: 'arcade',
@@ -47,6 +49,7 @@ let lastTileEntered
 let leftFoot, rightFoot
 let level
 let player
+let randomBackground
 let visitedLayer
 let worldLayer
 
@@ -62,6 +65,8 @@ function init() {
     level = `map${possibleNextLevel}`
   }
   console.log(`using level ${level}`)
+
+  randomBackground = backgrounds[_.random(backgrounds.length - 1)]
 }
 
 function preload() {
@@ -69,6 +74,7 @@ function preload() {
     frameWidth: 32,
     frameHeight: 32
   })
+  this.load.image('background', `./src/assets/backgrounds/${randomBackground.filename}`)
   this.load.image('spritesheet', spritesheet)
   this.load.tilemapTiledJSON(level, `./src/assets/maps/${level}.json`)
 
@@ -82,11 +88,29 @@ function preload() {
   }
 }
 
+function getBackgroundScale(map, scrollFactor) {
+  // x
+  let neededImageWidth = game.scale.width * (1 + scrollFactor)
+  let neededImageWidthScale = neededImageWidth / randomBackground.width
+
+  // y
+  let neededImageHeight = game.scale.height * (1 + scrollFactor)
+  let neededImageHeightScale = neededImageHeight / randomBackground.height
+
+  return _.ceil(_.max([neededImageWidthScale, neededImageHeightScale]), 1)
+}
+
 function create() {
   const map = this.make.tilemap({ key: level })
-  const tiles = map.addTilesetImage('spritesheet', 'spritesheet', 64, 64, 1, 2)
+  const tiles = map.addTilesetImage('spritesheet', 'spritesheet', 64, 64, 1, 6)
 
-  map.createStaticLayer('Background', tiles, 0, 0)
+  // add background image
+  this.add.tileSprite(0, 0, randomBackground.width, randomBackground.height, 'background')
+    .setScale(getBackgroundScale(map, 0.1))
+    .setOrigin(0, 0)
+    .setScrollFactor(0.1)
+
+  // map.createStaticLayer('Background', tiles, 0, 0) // now using background images instead of tile layer
   worldLayer = map.createStaticLayer('World', tiles, 0, 0)
 
   worldLayer.setCollisionBetween(0, 119)

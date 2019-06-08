@@ -27,6 +27,12 @@ After starting the development server with `npm start`, you can edit any files i
 and webpack will automatically recompile and reload your server (available at `http://localhost:8080`
 by default).
 
+## Extruding Tilesheet
+
+Install [tile-extruder](https://github.com/sporadic-labs/tile-extruder)
+
+`tile-extruder --tileWidth 64 --tileHeight 64 --spacing 4 --input ./src/assets/spritesheet.png --output ./src/assets/spritesheet-extruded.png`
+
 ## Customizing Template
 
 ### Babel
@@ -48,8 +54,11 @@ modify the `webpack/base.js` file for cross-project changes, or you can modify a
 new configuration files and target them in specific npm tasks inside of `package.json'.
 
 ## Deploying Code
-After you run the `npm run build` command, your code will be built into a single bundle located at 
-`dist/bundle.min.js` along with any other assets you project depended. 
+After you run the `npm run build` command, your code will be built into a single bundle located at `dist/bundle.min.js` along with any other assets you project depended.
 
-If you put the contents of the `dist` folder in a publicly-accessible location (say something like `http://mycoolserver.com`), 
-you should be able to open `http://mycoolserver.com/index.html` and play your game.
+If you put the contents of the `dist` folder in a publicly-accessible location (say something like `http://mycoolserver.com`), you should be able to open `http://mycoolserver.com/index.html` and play your game.
+
+# Credits
+
+* Backgrounds from [craftpix.net](https://craftpix.net/)
+* Other assets from [kenney.nl](https://kenney.nl/assets)
