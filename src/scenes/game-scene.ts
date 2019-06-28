@@ -2,12 +2,6 @@ import { CONST } from '../helpers/const'
 import { Player } from '../objects/player'
 import { Path } from '../objects/path'
 
-interface NavPoint {
-  x?: number
-  y?: number
-  t?: number
-}
-
 export class GameScene extends Phaser.Scene {
   private joystickStick
   private joystickStickGraphics
@@ -22,7 +16,6 @@ export class GameScene extends Phaser.Scene {
   private targetPoint
   private trajectory
   private tween
-  private upcomingPoints: Array<NavPoint>
   private i = 0
 
 
@@ -41,33 +34,21 @@ export class GameScene extends Phaser.Scene {
     this.path = new Path()
     this.path.draw(pathGraphics)
 
-    // TODO: navPoints stuff should live in path
-    // have helper methods to get & set upcomingPoints
-    const navPoints: Array<NavPoint> = this.path.getSpacedPoints(this.path.numberOfNavPoints())
     var navPointsGraphics = this.add.graphics({
       fillStyle: {
         color: 0x005500
       }
     })
 
+    const navPoints = this.path.getNavPoints()
     for (var i = 0; i < navPoints.length; i++) {
-      navPoints[i].t = i / this.path.numberOfNavPoints()
+      navPoints[i].t = i / this.path.getNumberOfNavPoints()
 
       // start by removing point 0 from the array
       // the first item in the array is always the next point
       // once your t >= the first point's t, remove that point from the array
       navPointsGraphics.fillCircleShape(new Phaser.Geom.Circle(navPoints[i].x, navPoints[i].y, 1))
     }
-    this.upcomingPoints = navPoints.map(point => ({ ...point }))
-    if (this.upcomingPoints[this.upcomingPoints.length - 1].t !== 1) {
-      this.upcomingPoints.push({
-        x: this.path.getEndPoint().x,
-        y: this.path.getEndPoint().y,
-        t: 1
-      })
-    }
-
-    this.upcomingPoints.shift() // first point isn't "upcoming"; you're already there
 
     this.player = this.add.follower(this.path, 0, 0, 'player')
     console.log(this.player)
