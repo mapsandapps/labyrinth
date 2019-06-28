@@ -1,14 +1,32 @@
-import { Enemy } from '../objects/enemy'
 import { Player } from '../objects/player'
+// import { Labyrinth } from '../objects/labyrinth'
+
+interface NavPoint {
+  x?: number
+  y?: number
+  t?: number
+}
 
 export class GameScene extends Phaser.Scene {
-  private backgroundLayer: Phaser.Tilemaps.StaticTilemapLayer
-  private layer: Phaser.Tilemaps.StaticTilemapLayer
-  private map: Phaser.Tilemaps.Tilemap
-  private tileset: Phaser.Tilemaps.Tileset
+  readonly MAX_DURATION = 5000
+  readonly DIST_BW_NAV_POINTS = 30
 
-  private enemies: Phaser.GameObjects.Group
-  private player: Player
+  private joystickStick
+  private joystickStickGraphics
+  private joystickPosition
+  private joystickStickWellGraphics
+  private targetPointGraphics
+  private targetPointLine
+
+  private path: Phaser.Curves.Path
+  private player: Phaser.GameObjects.PathFollower
+  private speedModifier
+  private targetPoint
+  private trajectory
+  private tween
+  private upcomingPoints: Array<NavPoint>
+  private i = 0
+
 
   constructor() {
     super({
@@ -16,32 +34,65 @@ export class GameScene extends Phaser.Scene {
     })
   }
 
-  init(): void {}
+  init(): void { }
 
   create(): void {
-    this.map = this.make.tilemap({ key: 'levelMap' })
+    var pathGraphics = this.add.graphics()
+    pathGraphics.lineStyle(32, 0xffffff, 1)
 
-    this.tileset = this.map.addTilesetImage('RPGpack_sheet', 'RPGpack_sheet', 64, 64, 1, 2)
-    this.backgroundLayer = this.map.createStaticLayer('Background', this.tileset, 0, 0)
-    this.layer = this.map.createStaticLayer('Map', this.tileset, 0, 0)
-    this.layer.setCollisionByProperty({ collide: true })
+    this.path = new Phaser.Curves.Path(50, 50)
+    this.path.lineTo(50, 250)
+    this.path.lineTo(150, 250)
+    this.path.lineTo(250, 150)
+    this.path.lineTo(250, 50)
+    this.path.lineTo(150, 50)
 
-    this.enemies = this.add.group({ })
+    this.path.draw(pathGraphics)
 
-    this.convertObjects()
+    const numberOfNavPoints = this.path.getLength() / this.DIST_BW_NAV_POINTS
 
-    this.physics.add.collider(this.player, this.layer)
+    const navPoints: Array<NavPoint> = this.path.getSpacedPoints(numberOfNavPoints)
+    var navPointsGraphics = this.add.graphics({
+      fillStyle: {
+        color: 0x005500
+      }
+    })
 
-    this.cameras.main.startFollow(this.player)
+    for (var i = 0; i < navPoints.length; i++) {
+      navPoints[i].t = i / numberOfNavPoints
+
+      // start by removing point 0 from the array
+      // the first item in the array is always the next point
+      // once your t >= the first point's t, remove that point from the array
+      navPointsGraphics.fillCircleShape(new Phaser.Geom.Circle(navPoints[i].x, navPoints[i].y, 1))
+    }
+    this.upcomingPoints = navPoints.map(point => ({ ...point }))
+    if (this.upcomingPoints[this.upcomingPoints.length - 1].t !== 1) {
+      this.upcomingPoints.push({
+        x: this.path.getEndPoint().x,
+        y: this.path.getEndPoint().y,
+        t: 1
+      })
+    }
+
+    this.upcomingPoints.shift() // first point isn't "upcoming"; you're already there
+
+    this.player = this.add.follower(this.path, 50, 50, 'player')
+    console.log(this.player)
+
+    this.player.startFollow({
+      from: 0, // not sure why ts thinks these are required
+      to: 1,
+      duration: this.MAX_DURATION,
+      rotateToPath: true,
+      rotationOffset: 90
+    });
+
+    // this.cameras.main.startFollow(this.player)
   }
 
   update(): void {
-    this.player.update()
-
-    this.enemies.children.each((enemy: Enemy) => {
-
-      enemy.update()
-    }, this)
+    // this.player.update()
   }
 
   private restartScene(): void {
@@ -49,49 +100,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setObjectsInactive(): void {
-    this.player.setActive(false)
-    this.enemies.children.each(enemy => {
-      enemy.setActive(false)
-    })
-  }
-
-  private gameLost(enemy): void {
-    this.setObjectsInactive()
-
-    this.add.text(
-      this.player.x,
-      this.player.y,
-      'Oh no!\nYou lost!', {
-        align: 'center'
-      }
-    ).setOrigin(0.5, 0.5)
-  }
-
-  private convertObjects(): void {
-    const objects = this.map.getObjectLayer('Objects').objects as any[]
-
-    objects.forEach((object, i) => {
-      if (object.name === 'Player') {
-        this.player = new Player({
-          scene: this,
-          x: object.x,
-          y: object.y,
-          key: 'player'
-        })
-      } else if (object.name === 'Enemy') {
-        let enemy = new Enemy({
-          scene: this,
-          x: object.x,
-          y: object.y,
-          key: `enemy${i % 3}`
-        })
-
-        this.physics.add.collider(enemy, this.layer)
-        this.physics.add.collider(enemy, this.player)
-
-        this.enemies.add(enemy)
-      }
-    })
+    // this.player.setActive(false)
   }
 
   private exitToWinScene(): void {
