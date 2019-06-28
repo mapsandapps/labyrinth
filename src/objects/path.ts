@@ -22,8 +22,12 @@ export class Path extends Phaser.Curves.Path {
     return this.navPoints
   }
 
-  getNumberOfNavPoints(): number {
+  private getNumberOfNavPoints(): number {
     return this.numberOfNavPoints
+  }
+
+  getTargetPoint(): NavPoint {
+    return this.targetPoint
   }
 
   getUpcomingPoints(): Array<NavPoint> {
@@ -31,8 +35,16 @@ export class Path extends Phaser.Curves.Path {
   }
 
   private createNavPoints(): void {
+    // start by removing point 0 from the array
+    // the first item in the array is always the next point
+    // once your t >= the first point's t, remove that point from the array
+
     this.numberOfNavPoints = this.getLength() / CONST.DIST_BW_NAV_POINTS
     this.navPoints = this.getSpacedPoints(this.numberOfNavPoints)
+
+    for (var i = 0; i < this.navPoints.length; i++) {
+      this.navPoints[i].t = i / this.getNumberOfNavPoints()
+    }
 
     this.upcomingPoints = this.navPoints.map(point => ({ ...point })) // TODO: replace with lodash cloneDeep
 

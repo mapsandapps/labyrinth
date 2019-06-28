@@ -1,23 +1,20 @@
 import { CONST } from '../helpers/const'
-import { Player } from '../objects/player'
 import { Path } from '../objects/path'
+// import { Player } from '../objects/player'
 
 export class GameScene extends Phaser.Scene {
   private joystickStick
   private joystickStickGraphics
   private joystickPosition
   private joystickStickWellGraphics
-  private targetPointGraphics
-  private targetPointLine
+  private targetPointGraphics: Phaser.GameObjects.Graphics
 
   private path: Path
   private player: Phaser.GameObjects.PathFollower
   private speedModifier
-  private targetPoint
+  private targetPointLine: Phaser.Geom.Line
   private trajectory
   private tween
-  private i = 0
-
 
   constructor() {
     super({
@@ -42,16 +39,10 @@ export class GameScene extends Phaser.Scene {
 
     const navPoints = this.path.getNavPoints()
     for (var i = 0; i < navPoints.length; i++) {
-      navPoints[i].t = i / this.path.getNumberOfNavPoints()
-
-      // start by removing point 0 from the array
-      // the first item in the array is always the next point
-      // once your t >= the first point's t, remove that point from the array
       navPointsGraphics.fillCircleShape(new Phaser.Geom.Circle(navPoints[i].x, navPoints[i].y, 1))
     }
 
     this.player = this.add.follower(this.path, 0, 0, 'player')
-    console.log(this.player)
 
     this.player.startFollow({
       from: 0, // not sure why ts thinks these are required
@@ -59,7 +50,16 @@ export class GameScene extends Phaser.Scene {
       duration: CONST.MAX_DURATION,
       rotateToPath: true,
       rotationOffset: 90
-    });
+    })
+
+    this.targetPointGraphics = this.add.graphics({
+      lineStyle: {
+        color: 0x009900,
+        width: 4
+      }
+    })
+
+    this.targetPointLine = new Phaser.Geom.Line()
 
     // this.cameras.main.startFollow(this.player)
   }
@@ -67,6 +67,10 @@ export class GameScene extends Phaser.Scene {
   update(): void {
     // this.player.update()
     this.path.update(this.player.pathTween.getValue())
+
+    this.targetPointLine.setTo(this.player.x, this.player.y, this.path.getTargetPoint().x, this.path.getTargetPoint().y)
+    this.targetPointGraphics.clear()
+    this.targetPointGraphics.strokeLineShape(this.targetPointLine)
   }
 
   private restartScene(): void {
