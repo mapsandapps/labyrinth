@@ -66,6 +66,7 @@ export class GameScene extends Phaser.Scene {
 
   update(): void {
     // this.player.update()
+    this.path.update(this.player.pathTween.getValue())
   }
 
   private restartScene(): void {

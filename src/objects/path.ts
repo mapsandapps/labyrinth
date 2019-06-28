@@ -9,6 +9,7 @@ interface NavPoint {
 export class Path extends Phaser.Curves.Path {
   private navPoints: Array<NavPoint>
   private numberOfNavPoints: number
+  private targetPoint: NavPoint
   private upcomingPoints: Array<NavPoint>
 
   constructor() {
@@ -55,5 +56,30 @@ export class Path extends Phaser.Curves.Path {
     this.lineTo(150, 50)
 
     this.createNavPoints()
+  }
+
+  update(playerT: number): void {
+    if (this.upcomingPoints.length > 0 && playerT >= this.upcomingPoints[0].t) {
+      this.upcomingPoints.shift()
+    }
+
+    if (this.upcomingPoints.length < 1) {
+      // win()
+      return
+    } else if (this.upcomingPoints.length < 3) {
+      // if we do halfway between two for the next to last one, it's very close to the last one, so just skip one
+      if (this.upcomingPoints.length === 2) {
+        this.upcomingPoints.shift()
+      }
+      this.targetPoint = {
+        x: this.upcomingPoints[0].x,
+        y: this.upcomingPoints[0].y
+      }
+    } else {
+      this.targetPoint = {
+        x: (this.upcomingPoints[0].x + this.upcomingPoints[1].x) / 2,
+        y: (this.upcomingPoints[0].y + this.upcomingPoints[1].y) / 2
+      }
+    }
   }
 }
