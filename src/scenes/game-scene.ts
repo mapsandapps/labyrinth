@@ -42,15 +42,23 @@ export class GameScene extends Phaser.Scene {
       navPointsGraphics.fillCircleShape(new Phaser.Geom.Circle(navPoints[i].x, navPoints[i].y, 1))
     }
 
-    this.player = this.add.follower(this.path, 0, 0, 'player')
+    this.player = this.add.follower(this.path, 0, 0, 'ball')
 
     this.player.startFollow({
       from: 0, // not sure why ts thinks these are required
       to: 1,
       duration: CONST.MAX_DURATION,
-      rotateToPath: true,
+      // rotateToPath: true,
       rotationOffset: 90
     })
+
+    this.anims.create({
+      key: 'roll',
+      frames: this.anims.generateFrameNumbers('ball', { frames: [0, 1, 2, 3, 4] }),
+      frameRate: 1,
+      repeat: -1
+    })
+    this.player.anims.play('roll', true)
 
     this.targetPointGraphics = this.add.graphics({
       lineStyle: {

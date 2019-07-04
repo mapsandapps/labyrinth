@@ -5,6 +5,15 @@
         "type": "image",
         "key": "player",
         "url": "./src/assets/player.png"
+      },
+      {
+        "type": "spritesheet",
+        "key": "ball",
+        "url": "./src/assets/ball.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
       }
     ]
   }
