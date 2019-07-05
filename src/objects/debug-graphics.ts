@@ -8,8 +8,6 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
     this.init(params.scene)
   }
 
-  preload(): void { }
-
   private init(scene): void {
     var navPointsGraphics = new Phaser.GameObjects.Graphics(scene, {
       fillStyle: {
@@ -34,8 +32,6 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
     scene.add.existing(navPointsGraphics) // TODO: i really want to add navPointGraphics to this group and then add the group to the scene
     scene.add.existing(this.targetPointGraphics)
   }
-
-  create(): void { }
 
   update(scene): void {
     this.targetPointLine.setTo(scene.player.x, scene.player.y, scene.path.getTargetPoint().x, scene.path.getTargetPoint().y)

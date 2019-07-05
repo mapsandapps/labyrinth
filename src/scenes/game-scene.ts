@@ -1,7 +1,7 @@
 import { CONST } from '../helpers/const'
 import { DebugGraphics } from '../objects/debug-graphics'
 import { Path } from '../objects/path'
-// import { Player } from '../objects/player'
+import { Player } from '../objects/player'
 
 export class GameScene extends Phaser.Scene {
   private joystickStick
@@ -11,7 +11,7 @@ export class GameScene extends Phaser.Scene {
 
   private debugGraphics: DebugGraphics
   private path: Path
-  private player: Phaser.GameObjects.PathFollower
+  private player: Player
   private speedModifier
   private trajectory
   private tween
@@ -31,23 +31,9 @@ export class GameScene extends Phaser.Scene {
     this.path = new Path()
     this.path.draw(pathGraphics)
 
-    this.player = this.add.follower(this.path, 0, 0, 'ball')
-
-    this.player.startFollow({
-      from: 0, // not sure why ts thinks these are required
-      to: 1,
-      duration: CONST.MAX_DURATION,
-      // rotateToPath: true,
-      rotationOffset: 90
+    this.player = new Player({
+      scene: this
     })
-
-    this.anims.create({
-      key: 'roll',
-      frames: this.anims.generateFrameNumbers('ball', { frames: [0, 1, 2, 3, 4] }),
-      frameRate: 1,
-      repeat: -1
-    })
-    this.player.anims.play('roll', true)
 
     this.debugGraphics = new DebugGraphics({
       scene: this
@@ -57,9 +43,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(): void {
-    // this.player.update()
-    this.path.update(this.player.pathTween.getValue())
-
+    this.player.update(this)
     this.debugGraphics.update(this)
   }
 
