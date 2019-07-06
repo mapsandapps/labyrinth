@@ -1,4 +1,5 @@
 import { CONST } from '../helpers/const'
+import { GameScene } from '../scenes/game-scene'
 
 interface NavPoint {
   x?: number
@@ -9,11 +10,14 @@ interface NavPoint {
 export class Path extends Phaser.Curves.Path {
   private navPoints: Array<NavPoint>
   private numberOfNavPoints: number
+  private scene: GameScene
   private targetPoint: NavPoint
   private upcomingPoints: Array<NavPoint>
 
-  constructor() {
+  constructor(scene) {
     super()
+
+    this.scene = scene
 
     this.init()
   }
@@ -76,7 +80,7 @@ export class Path extends Phaser.Curves.Path {
     }
 
     if (this.upcomingPoints.length < 1) {
-      // win()
+      this.scene.win()
       return
     } else if (this.upcomingPoints.length < 3) {
       // if we do halfway between two for the next to last one, it's very close to the last one, so just skip one

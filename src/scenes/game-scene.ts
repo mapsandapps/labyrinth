@@ -28,7 +28,7 @@ export class GameScene extends Phaser.Scene {
     var pathGraphics = this.add.graphics()
     pathGraphics.lineStyle(32, 0xffffff, 1)
 
-    this.path = new Path()
+    this.path = new Path(this)
     this.path.draw(pathGraphics)
 
     this.player = new Player({
@@ -47,17 +47,15 @@ export class GameScene extends Phaser.Scene {
     this.debugGraphics.update(this)
   }
 
-  private restartScene(): void {
-    this.scene.restart()
-  }
-
-  private setObjectsInactive(): void {
+  win(): void {
     // this.player.setActive(false)
-  }
-
-  private exitToWinScene(): void {
-    this.setObjectsInactive()
+    // this.scene.pause()
     this.scene.stop()
     this.scene.get('WinScene').scene.start()
+    // this.restartScene()
+  }
+
+  private restartScene(): void {
+    this.scene.restart()
   }
 }
