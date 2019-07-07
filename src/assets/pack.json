@@ -2,11 +2,6 @@
   "preload": {
     "files": [
       {
-        "type": "image",
-        "key": "player",
-        "url": "./src/assets/player.png"
-      },
-      {
         "type": "spritesheet",
         "key": "ball",
         "url": "./src/assets/ball.png",
