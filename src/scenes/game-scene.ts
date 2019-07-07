@@ -5,8 +5,6 @@ import { Player } from '../objects/player'
 export class GameScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap
   private tileset: Phaser.Tilemaps.Tileset
-  private backgroundLayer: Phaser.Tilemaps.StaticTilemapLayer
-  private foregroundLayer: Phaser.Tilemaps.StaticTilemapLayer
 
   private debugGraphics: DebugGraphics
   private path: Path
@@ -25,18 +23,24 @@ export class GameScene extends Phaser.Scene {
       key: 'map1'
     })
     this.tileset = this.map.addTilesetImage('tiles')
-    this.backgroundLayer = this.map.createStaticLayer(
-      'Background',
+    this.map.createStaticLayer(
+      '0',
       this.tileset,
       0,
       0
-    )
-    this.foregroundLayer = this.map.createStaticLayer(
-      'Foreground',
+    ).setDepth(0)
+    this.map.createStaticLayer(
+      '2',
       this.tileset,
       0,
       0
-    )
+    ).setDepth(2)
+    this.map.createStaticLayer(
+      '4',
+      this.tileset,
+      0,
+      0
+    ).setDepth(4)
   }
 
   create(): void {
@@ -46,7 +50,7 @@ export class GameScene extends Phaser.Scene {
     pathGraphics.lineStyle(3, 0xffffff, 1)
 
     this.path = new Path(this)
-    this.path.draw(pathGraphics)
+    // this.path.draw(pathGraphics)
 
     this.player = new Player({
       scene: this
@@ -56,7 +60,7 @@ export class GameScene extends Phaser.Scene {
       scene: this
     })
 
-    // this.cameras.main.startFollow(this.player)
+    this.cameras.main.startFollow(this.player)
   }
 
   update(): void {

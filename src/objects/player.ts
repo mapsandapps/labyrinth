@@ -4,6 +4,10 @@ import { Path } from '../objects/path'
 export class Player extends Phaser.GameObjects.PathFollower {
   private labyrinth: Path
   private pointerDown: boolean = false
+  private changeDepthsAt = [
+    { t: 0.52, depth: 3 },
+    { t: 0.72, depth: 5 }
+  ]
 
   constructor(params) {
     super(params.scene, params.scene.path, 0, 0, 'ball')
@@ -14,10 +18,12 @@ export class Player extends Phaser.GameObjects.PathFollower {
   }
 
   private init() {
+    this.setDepth(1)
+
     this.startFollow({
       from: 0, // not sure why ts thinks these are required
       to: 1,
-      duration: CONST.MAX_DURATION,
+      duration: 200000 / CONST.MAX_SPEED,
       // rotateToPath: true,
       rotationOffset: 90
     });
@@ -45,10 +51,15 @@ export class Player extends Phaser.GameObjects.PathFollower {
   private onPointerMove(pointer: Phaser.Input.Pointer): void {
     if (!this.pointerDown) return
 
+    if (this.changeDepthsAt.length > 0 && this.pathTween.getValue() >= this.changeDepthsAt[0].t) {
+      this.setDepth(this.changeDepthsAt[0].depth)
+      this.changeDepthsAt.shift()
+    }
+
     const targetPoint = this.labyrinth.getTargetPoint()
     const targetAngle = Phaser.Math.Angle.Between(this.x, this.y, targetPoint.x, targetPoint.y) * 180 / Math.PI
 
-    const angleBetweenPlayerAndCursor = Phaser.Math.Angle.Between(this.x, this.y, pointer.x, pointer.y) * 180 / Math.PI // -180 to 180
+    const angleBetweenPlayerAndCursor = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY) * 180 / Math.PI // -180 to 180
     const precision = 180 - Math.abs(Phaser.Math.Angle.ShortestBetween(targetAngle, angleBetweenPlayerAndCursor)) // 0 - 180
 
     const speedModifier = Math.max(precision - 90, 0) / 90 // 0 - 1

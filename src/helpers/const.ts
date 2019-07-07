@@ -1,4 +1,4 @@
 export let CONST = {
   DIST_BW_NAV_POINTS: 40,
-  MAX_DURATION: 5000
+  MAX_SPEED: 30
 };

@@ -38,7 +38,7 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
     this.info = new Phaser.GameObjects.Text(scene, scene.sys.canvas.width - 10, 10, '', {
       font: '12px Arial',
       fill: '#ffffff'
-    }).setOrigin(1, 0)
+    }).setOrigin(1, 0).setScrollFactor(0)
 
     scene.add.existing(this.info)
   }

@@ -9,10 +9,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   init(): void {
-    this.startKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.X
-    )
-    this.startKey.isDown = false
+    this.input.on('pointerup', () => this.scene.start('GameScene'))
   }
 
   preload(): void {
@@ -32,14 +29,8 @@ export class MenuScene extends Phaser.Scene {
       this.add.text(
         this.sys.canvas.width / 2,
         this.sys.canvas.height / 2 + 60,
-        'PRESS X TO PLAY'
+        'TAP TO PLAY'
       ).setOrigin(0.5, 0.5)
     )
-  }
-
-  update(): void {
-    if (this.startKey.isDown) {
-      this.scene.start('GameScene')
-    }
   }
 }
