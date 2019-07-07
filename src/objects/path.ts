@@ -66,12 +66,31 @@ export class Path extends Phaser.Curves.Path {
   }
 
   private init(): void {
-    this.moveTo(50, 50)
-    this.lineTo(50, 250)
-    this.lineTo(150, 250)
-    this.lineTo(250, 150)
-    this.lineTo(250, 50)
-    this.lineTo(150, 50)
+    let map = [
+      { x: 2, y: 8 },
+      { x: 2, y: 6 },
+      { x: 4, y: 6 },
+      { x: 4, y: 4 },
+      { x: 2, y: 4 },
+      { x: 2, y: 2 },
+      { x: 5, y: 2 },
+      { x: 6, y: 3 },
+      { x: 6, y: 8 },
+      { x: 3, y: 8 },
+      { x: 3, y: 5 },
+      { x: 8, y: 5 },
+      { x: 8, y: 7 },
+      { x: 5, y: 7 },
+      { x: 5, y: 3 },
+      { x: 4, y: 3 }
+    ]
+    map.forEach((coord, i) => {
+      if (i === 0) {
+        this.moveTo(coord.x * 64 - 32, coord.y * 64 - 32)
+      } else {
+        this.lineTo(coord.x * 64 - 32, coord.y * 64 - 32)
+      }
+    })
 
     this.createNavPoints()
   }

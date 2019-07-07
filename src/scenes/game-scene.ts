@@ -3,6 +3,11 @@ import { Path } from '../objects/path'
 import { Player } from '../objects/player'
 
 export class GameScene extends Phaser.Scene {
+  private map: Phaser.Tilemaps.Tilemap
+  private tileset: Phaser.Tilemaps.Tileset
+  private backgroundLayer: Phaser.Tilemaps.StaticTilemapLayer
+  private foregroundLayer: Phaser.Tilemaps.StaticTilemapLayer
+
   private debugGraphics: DebugGraphics
   private path: Path
   private player: Player
@@ -15,9 +20,30 @@ export class GameScene extends Phaser.Scene {
 
   init(): void { }
 
+  createTilemap(): void {
+    this.map = this.make.tilemap({
+      key: 'map1'
+    })
+    this.tileset = this.map.addTilesetImage('tiles')
+    this.backgroundLayer = this.map.createStaticLayer(
+      'Background',
+      this.tileset,
+      0,
+      0
+    )
+    this.foregroundLayer = this.map.createStaticLayer(
+      'Foreground',
+      this.tileset,
+      0,
+      0
+    )
+  }
+
   create(): void {
+    this.createTilemap()
+
     var pathGraphics = this.add.graphics()
-    pathGraphics.lineStyle(32, 0xffffff, 1)
+    pathGraphics.lineStyle(3, 0xffffff, 1)
 
     this.path = new Path(this)
     this.path.draw(pathGraphics)
