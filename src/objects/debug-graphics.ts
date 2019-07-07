@@ -1,4 +1,7 @@
+import { round } from 'lodash'
+
 export class DebugGraphics extends Phaser.GameObjects.Group {
+  private info: Phaser.GameObjects.Text
   private targetPointGraphics: Phaser.GameObjects.Graphics
   private targetPointLine: Phaser.Geom.Line
 
@@ -31,11 +34,20 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
 
     scene.add.existing(navPointsGraphics) // TODO: i really want to add navPointGraphics to this group and then add the group to the scene
     scene.add.existing(this.targetPointGraphics)
+
+    this.info = new Phaser.GameObjects.Text(scene, scene.sys.canvas.width - 10, 10, '', {
+      font: '12px Arial',
+      fill: '#ffffff'
+    }).setOrigin(1, 0)
+
+    scene.add.existing(this.info)
   }
 
   update(scene): void {
     this.targetPointLine.setTo(scene.player.x, scene.player.y, scene.path.getTargetPoint().x, scene.path.getTargetPoint().y)
     this.targetPointGraphics.clear()
     this.targetPointGraphics.strokeLineShape(this.targetPointLine)
+
+    this.info.setText(`Player T: ${round(scene.player.pathTween.getValue(), 2)}`)
   }
 }

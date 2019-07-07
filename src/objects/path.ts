@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash'
+
 import { CONST } from '../helpers/const'
 import { GameScene } from '../scenes/game-scene'
 
@@ -50,7 +52,7 @@ export class Path extends Phaser.Curves.Path {
       this.navPoints[i].t = i / this.getNumberOfNavPoints()
     }
 
-    this.upcomingPoints = this.navPoints.map(point => ({ ...point })) // TODO: replace with lodash cloneDeep
+    this.upcomingPoints = cloneDeep(this.navPoints)
 
     if (this.upcomingPoints[this.upcomingPoints.length - 1].t !== 1) {
       this.upcomingPoints.push({
