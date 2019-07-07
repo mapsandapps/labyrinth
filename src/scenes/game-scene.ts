@@ -34,8 +34,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(): void {
-    this.player.update(this)
+    this.path.update()
     this.debugGraphics.update(this)
+  }
+
+  getPlayerT(): number {
+    return this.player.pathTween.getValue()
   }
 
   win(): void {

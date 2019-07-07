@@ -58,10 +58,5 @@ export class Player extends Phaser.GameObjects.PathFollower {
   private onPointerUp(): void {
     this.pointerDown = false
     this.pathTween.setTimeScale(0)
-
-  }
-
-  update(scene): void {
-    scene.path.update(this.pathTween.getValue())
   }
 }

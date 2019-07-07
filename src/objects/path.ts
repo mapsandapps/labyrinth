@@ -74,7 +74,8 @@ export class Path extends Phaser.Curves.Path {
     this.createNavPoints()
   }
 
-  update(playerT: number): void {
+  update(): void {
+    const playerT = this.scene.getPlayerT()
     if (this.upcomingPoints.length > 0 && playerT >= this.upcomingPoints[0].t) {
       this.upcomingPoints.shift()
     }
