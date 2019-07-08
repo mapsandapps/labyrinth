@@ -14,7 +14,7 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
   private init(scene): void {
     var navPointsGraphics = new Phaser.GameObjects.Graphics(scene, {
       fillStyle: {
-        color: 0x005500
+        color: 0x480a3e
       }
     })
 
@@ -25,7 +25,7 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
 
     this.targetPointGraphics = new Phaser.GameObjects.Graphics(scene, {
       lineStyle: {
-        color: 0x009900,
+        color: 0xf4c80e,
         width: 4
       }
     })

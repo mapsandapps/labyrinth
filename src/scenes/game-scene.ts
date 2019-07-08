@@ -53,6 +53,7 @@ export class GameScene extends Phaser.Scene {
     })
 
     this.cameras.main.startFollow(this.player)
+    this.cameras.main.setBackgroundColor('#0db5eb')
   }
 
   update(): void {
