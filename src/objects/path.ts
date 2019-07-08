@@ -16,12 +16,12 @@ export class Path extends Phaser.Curves.Path {
   private targetPoint: NavPoint
   private upcomingPoints: Array<NavPoint>
 
-  constructor(scene) {
+  constructor(scene, directions) {
     super()
 
     this.scene = scene
 
-    this.init()
+    this.init(directions)
   }
 
   getNavPoints(): Array<NavPoint> {
@@ -65,30 +65,12 @@ export class Path extends Phaser.Curves.Path {
     this.upcomingPoints.shift() // first point isn't "upcoming"; you're already there
   }
 
-  private init(): void {
-    let map = [
-      { x: 2, y: 8 },
-      { x: 2, y: 6 },
-      { x: 4, y: 6 },
-      { x: 4, y: 4 },
-      { x: 2, y: 4 },
-      { x: 2, y: 2 },
-      { x: 5, y: 2 },
-      { x: 6, y: 3 },
-      { x: 6, y: 8 },
-      { x: 3, y: 8 },
-      { x: 3, y: 5 },
-      { x: 8, y: 5 },
-      { x: 8, y: 7 },
-      { x: 5, y: 7 },
-      { x: 5, y: 3 },
-      { x: 4, y: 3 }
-    ]
-    map.forEach((coord, i) => {
+  private init(directions): void {
+    directions.forEach((coord, i) => {
       if (i === 0) {
-        this.moveTo(coord.x * 64 - 32, coord.y * 64 - 32)
+        this.moveTo(coord.x * 64 + 32, coord.y * 64 + 32)
       } else {
-        this.lineTo(coord.x * 64 - 32, coord.y * 64 - 32)
+        this.lineTo(coord.x * 64 + 32, coord.y * 64 + 32)
       }
     })
 

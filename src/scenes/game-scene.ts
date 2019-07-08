@@ -23,37 +23,29 @@ export class GameScene extends Phaser.Scene {
       key: 'map1'
     })
     this.tileset = this.map.addTilesetImage('tiles')
-    this.map.createStaticLayer(
-      '0',
-      this.tileset,
-      0,
-      0
-    ).setDepth(0)
-    this.map.createStaticLayer(
-      '2',
-      this.tileset,
-      0,
-      0
-    ).setDepth(2)
-    this.map.createStaticLayer(
-      '4',
-      this.tileset,
-      0,
-      0
-    ).setDepth(4)
+    this.map.layers.forEach(layer => {
+      this.map.createStaticLayer(
+        layer.name,
+        this.tileset,
+        0,
+        0
+      ).setDepth(parseInt(layer.name))
+    })
   }
 
   create(): void {
     this.createTilemap()
 
-    var pathGraphics = this.add.graphics()
+    let pathGraphics = this.add.graphics()
     pathGraphics.lineStyle(3, 0xffffff, 1)
 
-    this.path = new Path(this)
+    let pathData = this.cache.json.get('path1')
+    this.path = new Path(this, pathData.directions)
     // this.path.draw(pathGraphics)
 
     this.player = new Player({
-      scene: this
+      scene: this,
+      changeDepthAt: pathData.changeDepthAt
     })
 
     this.debugGraphics = new DebugGraphics({

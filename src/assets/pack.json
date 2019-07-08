@@ -19,6 +19,11 @@
         "type": "tilemapTiledJSON",
         "key": "map1",
         "url": "./src/maps/map1.json"
+      },
+      {
+        "type": "json",
+        "key": "path1",
+        "url": "./src/maps/path1.json"
       }
     ]
   }

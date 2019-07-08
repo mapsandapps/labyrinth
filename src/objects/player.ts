@@ -1,16 +1,19 @@
 import { CONST } from '../helpers/const'
 import { Path } from '../objects/path'
 
+interface DepthChange {
+  t: number,
+  depth: number
+}
+
 export class Player extends Phaser.GameObjects.PathFollower {
+  private changeDepthAt: Array<DepthChange>
   private labyrinth: Path
   private pointerDown: boolean = false
-  private changeDepthsAt = [
-    { t: 0.52, depth: 3 },
-    { t: 0.72, depth: 5 }
-  ]
 
   constructor(params) {
     super(params.scene, params.scene.path, 0, 0, 'ball')
+    this.changeDepthAt = params.changeDepthAt
     this.init()
     this.scene.add.existing(this)
 
@@ -51,9 +54,9 @@ export class Player extends Phaser.GameObjects.PathFollower {
   private onPointerMove(pointer: Phaser.Input.Pointer): void {
     if (!this.pointerDown) return
 
-    if (this.changeDepthsAt.length > 0 && this.pathTween.getValue() >= this.changeDepthsAt[0].t) {
-      this.setDepth(this.changeDepthsAt[0].depth)
-      this.changeDepthsAt.shift()
+    if (this.changeDepthAt.length > 0 && this.pathTween.getValue() >= this.changeDepthAt[0].t) {
+      this.setDepth(this.changeDepthAt[0].depth)
+      this.changeDepthAt.shift()
     }
 
     const targetPoint = this.labyrinth.getTargetPoint()
