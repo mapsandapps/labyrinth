@@ -3,10 +3,12 @@ import { GameScene } from './scenes/game-scene';
 import { MenuScene } from './scenes/menu-scene';
 import { WinScene } from './scenes/win-scene';
 
+let mobileSized: boolean = window.innerWidth < 640
+
 // main game configuration
 const config: GameConfig = {
-  width: 800,
-  height: 600,
+  width: mobileSized ? window.innerWidth : 800,
+  height: mobileSized ? window.innerHeight : 600,
   type: Phaser.AUTO,
   parent: 'game',
   scene: [MenuScene, GameScene, WinScene],
