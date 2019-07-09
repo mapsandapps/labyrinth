@@ -22,8 +22,8 @@
       },
       {
         "type": "json",
-        "key": "path1",
-        "url": "./src/maps/path1.json"
+        "key": "directions1",
+        "url": "./src/maps/directions1.json"
       }
     ]
   }

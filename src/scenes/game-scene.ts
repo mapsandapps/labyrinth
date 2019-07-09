@@ -37,15 +37,15 @@ export class GameScene extends Phaser.Scene {
     this.createTilemap()
 
     let pathGraphics = this.add.graphics()
-    pathGraphics.lineStyle(3, 0xffffff, 1)
+    pathGraphics.lineStyle(3, 0xffffff, 5)
 
-    let pathData = this.cache.json.get('path1')
-    this.path = new Path(this, pathData.directions)
-    // this.path.draw(pathGraphics)
+    let directionsData = this.cache.json.get('directions1')
+    this.path = new Path(this, directionsData.directions)
+    this.path.draw(pathGraphics)
 
     this.player = new Player({
       scene: this,
-      changeDepthAt: pathData.changeDepthAt
+      changeDepthAt: directionsData.changeDepthAt
     })
 
     this.debugGraphics = new DebugGraphics({

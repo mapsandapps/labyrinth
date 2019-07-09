@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash'
+import { getDirections } from '../helpers/directions'
 
 import { CONST } from '../helpers/const'
 import { GameScene } from '../scenes/game-scene'
@@ -66,13 +67,7 @@ export class Path extends Phaser.Curves.Path {
   }
 
   private init(directions): void {
-    directions.forEach((coord, i) => {
-      if (i === 0) {
-        this.moveTo(coord.x * 64 + 32, coord.y * 64 + 32)
-      } else {
-        this.lineTo(coord.x * 64 + 32, coord.y * 64 + 32)
-      }
-    })
+    getDirections(this, directions)
 
     this.createNavPoints()
   }

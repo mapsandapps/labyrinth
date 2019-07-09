@@ -34,10 +34,10 @@ Builds to `index.html` and `dist/bundle.js`
 
 ## Path:
 * Create an array of path tiles (the indices can be seen in the bottom left corner of Tiled): only the tiles necessary for wayfinding need to be listed, not every tile the player will pass through
-* Create a src/maps/path{n}.json and add these
+* Create a src/maps/directions{n}.json and add these
 
 
 ## 3Ding path:
 * Turn on debug mode in the app
 * Find the player t's where the player's z-index/depth needs to change
-* Create an array of those and add it to the src/maps/path{n}.json file you created earlier
+* Create an array of those and add it to the src/maps/directions{n}.json file you created earlier

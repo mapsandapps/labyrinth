@@ -2,7 +2,7 @@ import { CONST } from '../helpers/const'
 import { Path } from '../objects/path'
 
 interface DepthChange {
-  t: number,
+  t: number
   depth: number
 }
 
