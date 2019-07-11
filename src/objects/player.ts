@@ -44,27 +44,31 @@ export class Player extends Phaser.GameObjects.PathFollower {
     this.scene.input.on('pointerup', this.onPointerUp, this)
     // FIXME: need to reuse onPointerUp event handlers for more events (e.g. pointer leaves the view)
 
-    this.pathTween.setTimeScale(0)
+    if (!CONST.DEBUG.AUTO_PLAY_ON) {
+      this.pathTween.setTimeScale(0)
+    }
   }
 
   private onPointerDown(): void {
     this.pointerDown = true
   }
 
-  private onPointerMove(pointer: Phaser.Input.Pointer): void {
-    if (!this.pointerDown) return
-
+  update(): void {
     if (this.changeDepthAt.length > 0 && this.pathTween.getValue() >= this.changeDepthAt[0].t) {
       this.setDepth(this.changeDepthAt[0].depth)
       this.changeDepthAt.shift()
     }
+  }
+
+  private onPointerMove(pointer: Phaser.Input.Pointer): void {
+    if (!this.pointerDown) return
 
     const targetPoint = this.labyrinth.getTargetPoint()
     const targetAngle = Phaser.Math.Angle.Between(this.x, this.y, targetPoint.x, targetPoint.y) * 180 / Math.PI
 
     const angleBetweenPlayerAndCursor = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY) * 180 / Math.PI // -180 to 180
-    const precision = 180 - Math.abs(Phaser.Math.Angle.ShortestBetween(targetAngle, angleBetweenPlayerAndCursor)) // 0 - 180
 
+    const precision = 180 - Math.abs(Phaser.Math.Angle.ShortestBetween(targetAngle, angleBetweenPlayerAndCursor)) // 0 - 180
     const speedModifier = Math.max(precision - 90, 0) / 90 // 0 - 1
     this.pathTween.setTimeScale(speedModifier)
   }

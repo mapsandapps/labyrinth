@@ -17,6 +17,7 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
         color: 0x480a3e
       }
     })
+    navPointsGraphics.setDepth(101)
 
     const navPoints = scene.path.getNavPoints()
     for (var i = 0; i < navPoints.length; i++) {
@@ -25,15 +26,28 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
 
     this.targetPointGraphics = new Phaser.GameObjects.Graphics(scene, {
       lineStyle: {
-        color: 0xf4c80e,
+        color: 0x00cc00,
         width: 4
       }
     })
+    this.targetPointGraphics.setDepth(102)
 
     this.targetPointLine = new Phaser.Geom.Line()
 
     scene.add.existing(navPointsGraphics) // TODO: i really want to add navPointGraphics to this group and then add the group to the scene
     scene.add.existing(this.targetPointGraphics)
+
+    let pathGraphics = new Phaser.GameObjects.Graphics(scene, {
+      lineStyle: {
+        color: 0xf07300,
+        width: 3,
+        alpha: 0.3
+      }
+    })
+
+    pathGraphics.setDepth(100)
+    scene.path.draw(pathGraphics)
+    scene.add.existing(pathGraphics)
 
     this.info = new Phaser.GameObjects.Text(scene, scene.sys.canvas.width - 10, 10, '', {
       font: '12px Arial',

@@ -13,7 +13,7 @@
       {
         "type": "image",
         "key": "tiles",
-        "url": "./src/assets/tiles.png"
+        "url": "./src/assets/temp-tiles-extruded.png"
       },
       {
         "type": "tilemapTiledJSON",

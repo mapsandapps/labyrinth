@@ -2,6 +2,8 @@ import { DebugGraphics } from '../objects/debug-graphics'
 import { Path } from '../objects/path'
 import { Player } from '../objects/player'
 
+import { CONST } from '../helpers/const'
+
 export class GameScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap
   private tileset: Phaser.Tilemaps.Tileset
@@ -22,7 +24,7 @@ export class GameScene extends Phaser.Scene {
     this.map = this.make.tilemap({
       key: 'map1'
     })
-    this.tileset = this.map.addTilesetImage('tiles')
+    this.tileset = this.map.addTilesetImage('tiles', null, 64, 64, 1, 2)
     this.map.layers.forEach(layer => {
       this.map.createStaticLayer(
         layer.name,
@@ -41,16 +43,18 @@ export class GameScene extends Phaser.Scene {
 
     let directionsData = this.cache.json.get('directions1')
     this.path = new Path(this, directionsData.directions)
-    this.path.draw(pathGraphics)
 
     this.player = new Player({
       scene: this,
       changeDepthAt: directionsData.changeDepthAt
     })
 
-    this.debugGraphics = new DebugGraphics({
-      scene: this
-    })
+    if (CONST.DEBUG.GRAPHICS_ON) {
+      this.debugGraphics = new DebugGraphics({
+        scene: this,
+        path: this.path
+      })
+    }
 
     this.cameras.main.startFollow(this.player)
     this.cameras.main.setBackgroundColor('#0db5eb')
@@ -58,7 +62,10 @@ export class GameScene extends Phaser.Scene {
 
   update(): void {
     this.path.update()
-    this.debugGraphics.update(this)
+    if (CONST.DEBUG.GRAPHICS_ON) {
+      this.debugGraphics.update(this)
+    }
+    this.player.update()
   }
 
   getPlayerT(): number {

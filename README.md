@@ -41,3 +41,9 @@ Builds to `index.html` and `dist/bundle.js`
 * Turn on debug mode in the app
 * Find the player t's where the player's z-index/depth needs to change
 * Create an array of those and add it to the src/maps/directions{n}.json file you created earlier
+
+# Extruding Tilesheet
+
+Install [tile-extruder](https://github.com/sporadic-labs/tile-extruder)
+
+`tile-extruder --tileWidth 64 --tileHeight 64 --spacing 0 --input ./src/assets/temp-tiles.png --output ./src/assets/temp-tiles-extruded.png`

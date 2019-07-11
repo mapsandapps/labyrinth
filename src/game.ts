@@ -3,7 +3,7 @@ import { GameScene } from './scenes/game-scene';
 import { MenuScene } from './scenes/menu-scene';
 import { WinScene } from './scenes/win-scene';
 
-let mobileSized: boolean = window.innerWidth < 640
+let mobileSized: boolean = window.innerWidth < 800
 
 // main game configuration
 const config: GameConfig = {
