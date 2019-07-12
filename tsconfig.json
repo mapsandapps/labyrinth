@@ -7,6 +7,6 @@
     "strict": false
   },
   "exclude": [
-    "old"
+    "src/assets"
   ]
 }

@@ -14,10 +14,9 @@ export class Player extends Phaser.GameObjects.PathFollower {
   constructor(params) {
     super(params.scene, params.scene.path, 0, 0, 'ball')
     this.changeDepthAt = params.changeDepthAt
+    this.labyrinth = params.scene.path
     this.init()
     this.scene.add.existing(this)
-
-    this.labyrinth = params.scene.path
   }
 
   private init() {
@@ -26,7 +25,7 @@ export class Player extends Phaser.GameObjects.PathFollower {
     this.startFollow({
       from: 0, // not sure why ts thinks these are required
       to: 1,
-      duration: 200000 / CONST.MAX_SPEED,
+      duration: this.labyrinth.getLength() * 2,
       // rotateToPath: true,
       rotationOffset: 90
     });

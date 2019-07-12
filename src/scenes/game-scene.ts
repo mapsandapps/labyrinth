@@ -24,7 +24,7 @@ export class GameScene extends Phaser.Scene {
     this.map = this.make.tilemap({
       key: 'map1'
     })
-    this.tileset = this.map.addTilesetImage('tiles', null, 64, 64, 1, 2)
+    this.tileset = this.map.addTilesetImage('temp-tiles', 'tiles', 64, 64, 1, 2) // 1st string is name in Tiled; 2nd is key in pack.json
     this.map.layers.forEach(layer => {
       this.map.createStaticLayer(
         layer.name,

@@ -12,9 +12,10 @@ interface DirectionComponent {
   x: number
   y: number
   tile: string
+  radius?: number
 }
 
-let direction: string
+let direction: number
 
 
 function getCenter(tile: DirectionComponent): Coordinates {
@@ -56,20 +57,20 @@ function createStart(path: Path, firstTile: DirectionComponent) {
   path.moveTo(getCenter(firstTile).x, getCenter(firstTile).y)
 
   // starting tiles: set initial direction; draw line from center of tile to edge
-  if (firstTile.tile === 'up') {
-    direction = 'up'
+  if (firstTile.tile === 'startUp') {
+    direction = 0
     path.lineTo(getTopCenter(firstTile).x, getTopCenter(firstTile).y)
   }
-  if (firstTile.tile === 'right') {
-    direction = 'right'
+  if (firstTile.tile === 'startRight') {
+    direction = 90
     path.lineTo(getRightCenter(firstTile).x, getRightCenter(firstTile).y)
   }
-  if (firstTile.tile === 'down') {
-    direction = 'down'
+  if (firstTile.tile === 'startDown') {
+    direction = 180
     path.lineTo(getBottomCenter(firstTile).x, getBottomCenter(firstTile).y)
   }
-  if (firstTile.tile === 'left') {
-    direction = 'left'
+  if (firstTile.tile === 'startLeft') {
+    direction = 270
     path.lineTo(getLeftCenter(firstTile).x, getLeftCenter(firstTile).y)
   }
 }
@@ -82,57 +83,22 @@ function getSegment(path: Path, nextTile: DirectionComponent) {
   // TODO: make a check for if the point you're moving to is the same as the one you're already at
 
   // draw straight line
-  if (direction === 'up') {
+  if (direction === 0) {
     path.lineTo(getBottomCenter(nextTile).x, getBottomCenter(nextTile).y)
-  } else if (direction === 'right') {
+  } else if (direction === 90) {
     path.lineTo(getLeftCenter(nextTile).x, getLeftCenter(nextTile).y)
-  } else if (direction === 'down') {
+  } else if (direction === 180) {
     path.lineTo(getTopCenter(nextTile).x, getTopCenter(nextTile).y)
-  } else if (direction === 'left') {
+  } else if (direction === 270) {
     path.lineTo(getRightCenter(nextTile).x, getRightCenter(nextTile).y)
   }
 
-  // draw curved line
-  if (nextTile.tile === 'rightDown') {
-    if (direction === 'up') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 180, 270, false, 0)
-      direction = 'right'
-    } else if (direction === 'left') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 270, 180, true, 0)
-      direction = 'down'
-    }
-  } else if (nextTile.tile === 'upLeft') {
-    if (direction === 'right') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 90, 0, true, 0)
-      direction = 'up'
-    } else if (direction === 'down') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 0, 90, false, 0)
-      direction = 'left'
-    }
-  } else if (nextTile.tile === 'downLeft') {
-    if (direction === 'up') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 0, 270, true, 0)
-      direction = 'left'
-    } else if (direction === 'right') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 270, 0, false, 0)
-      direction = 'down'
-    }
-  } else if (nextTile.tile === 'downLeft2x') {
-    if (direction === 'up') {
-      path.ellipseTo(CONST.TILE_SIZE * 1.5, CONST.TILE_SIZE * 1.5, 0, 270, true, 0)
-      direction = 'left'
-    } else if (direction === 'right') {
-      path.ellipseTo(CONST.TILE_SIZE * 1.5, CONST.TILE_SIZE * 1.5, 270, 0, false, 0)
-      direction = 'down'
-    }
-  } else if (nextTile.tile === 'upRight') {
-    if (direction === 'left') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 90, 180, false, 0)
-      direction = 'up'
-    } else if (direction === 'down') {
-      path.ellipseTo(CONST.TILE_SIZE / 2, CONST.TILE_SIZE / 2, 180, 90, true, 0)
-      direction = 'up'
-    }
+  if (nextTile.tile === 'turnLeft') {
+    path.ellipseTo((nextTile.radius - 0.5) * CONST.TILE_SIZE, (nextTile.radius - 0.5) * CONST.TILE_SIZE, direction, direction - 90, true, 0)
+    direction -= 90
+  } else if (nextTile.tile === 'turnRight') {
+    path.ellipseTo((nextTile.radius - 0.5) * CONST.TILE_SIZE, (nextTile.radius - 0.5) * CONST.TILE_SIZE, direction - 180, direction - 90, false, 0)
+    direction += 90
   }
 }
 
