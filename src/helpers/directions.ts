@@ -11,7 +11,7 @@ interface Coordinates {
 interface DirectionComponent {
   x: number
   y: number
-  tile: string
+  tile?: string
   radius?: number
 }
 
@@ -70,7 +70,7 @@ function createStart(path: Path, firstTile: DirectionComponent) {
     path.lineTo(getBottomCenter(firstTile).x, getBottomCenter(firstTile).y)
   }
   if (firstTile.tile === 'startLeft') {
-    direction = 270
+    direction = -90
     path.lineTo(getLeftCenter(firstTile).x, getLeftCenter(firstTile).y)
   }
 }
@@ -81,15 +81,16 @@ function createEnd(path: Path, lastTile: DirectionComponent) {
 
 function getSegment(path: Path, nextTile: DirectionComponent) {
   // TODO: make a check for if the point you're moving to is the same as the one you're already at
+  direction = Phaser.Math.Angle.WrapDegrees(direction)
 
   // draw straight line
   if (direction === 0) {
     path.lineTo(getBottomCenter(nextTile).x, getBottomCenter(nextTile).y)
   } else if (direction === 90) {
     path.lineTo(getLeftCenter(nextTile).x, getLeftCenter(nextTile).y)
-  } else if (direction === 180) {
+  } else if (direction === 180 || direction === -180) {
     path.lineTo(getTopCenter(nextTile).x, getTopCenter(nextTile).y)
-  } else if (direction === 270) {
+  } else if (direction === -90) {
     path.lineTo(getRightCenter(nextTile).x, getRightCenter(nextTile).y)
   }
 

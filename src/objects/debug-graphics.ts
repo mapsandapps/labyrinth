@@ -62,6 +62,6 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
     this.targetPointGraphics.clear()
     this.targetPointGraphics.strokeLineShape(this.targetPointLine)
 
-    this.info.setText(`Player T: ${round(scene.player.pathTween.getValue(), 2)}`)
+    this.info.setText(`Player T: ${round(scene.player.pathTween.getValue(), 3)}`)
   }
 }

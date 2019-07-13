@@ -5,6 +5,8 @@ import { Player } from '../objects/player'
 import { CONST } from '../helpers/const'
 
 export class GameScene extends Phaser.Scene {
+  private currentLevel: string
+  private currentLevelIndex: number = 0
   private map: Phaser.Tilemaps.Tilemap
   private tileset: Phaser.Tilemaps.Tileset
 
@@ -22,7 +24,7 @@ export class GameScene extends Phaser.Scene {
 
   createTilemap(): void {
     this.map = this.make.tilemap({
-      key: 'map1'
+      key: `map${this.currentLevel}`
     })
     this.tileset = this.map.addTilesetImage('temp-tiles', 'tiles', 64, 64, 1, 2) // 1st string is name in Tiled; 2nd is key in pack.json
     this.map.layers.forEach(layer => {
@@ -36,12 +38,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.currentLevel = CONST.LEVELS[this.currentLevelIndex]
     this.createTilemap()
 
     let pathGraphics = this.add.graphics()
     pathGraphics.lineStyle(3, 0xffffff, 5)
 
-    let directionsData = this.cache.json.get('directions1')
+    let directionsData = this.cache.json.get(`directions${this.currentLevel}`)
     this.path = new Path(this, directionsData.directions)
 
     this.player = new Player({
@@ -76,11 +79,11 @@ export class GameScene extends Phaser.Scene {
     // this.player.setActive(false)
     // this.scene.pause()
     this.scene.stop()
-    this.scene.get('WinScene').scene.start()
-    // this.restartScene()
-  }
-
-  private restartScene(): void {
-    this.scene.restart()
+    if (this.currentLevelIndex >= CONST.LEVELS.length - 1) {
+      this.scene.get('WinScene').scene.start()
+    } else {
+      this.currentLevelIndex++
+      this.scene.restart()
+    }
   }
 }

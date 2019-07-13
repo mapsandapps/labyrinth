@@ -4,7 +4,7 @@
       {
         "type": "spritesheet",
         "key": "ball",
-        "url": "./src/assets/ball.png",
+        "url": "./src/assets/ball-dark.png",
         "frameConfig": {
           "frameHeight": 64,
           "frameWidth": 64
@@ -24,6 +24,26 @@
         "type": "json",
         "key": "directions1",
         "url": "./src/maps/directions1.json"
+      },
+      {
+        "type": "tilemapTiledJSON",
+        "key": "map2",
+        "url": "./src/maps/map2.json"
+      },
+      {
+        "type": "json",
+        "key": "directions2",
+        "url": "./src/maps/directions2.json"
+      },
+      {
+        "type": "tilemapTiledJSON",
+        "key": "mapdemo",
+        "url": "./src/maps/mapdemo.json"
+      },
+      {
+        "type": "json",
+        "key": "directionsdemo",
+        "url": "./src/maps/directionsdemo.json"
       }
     ]
   }
