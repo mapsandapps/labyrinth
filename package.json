@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "phaser": "3.16.2"
+    "phaser": "3.18.1"
   },
   "scripts": {
     "dev": "webpack --mode development && webpack-dev-server --mode development",
