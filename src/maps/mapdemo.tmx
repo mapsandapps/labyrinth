@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="6" height="3" tilewidth="64" tileheight="64" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="6" height="5" tilewidth="64" tileheight="64" infinite="0" nextlayerid="3" nextobjectid="1">
  <tileset firstgid="1" name="temp-tiles" tilewidth="64" tileheight="64" tilecount="66" columns="11">
   <image source="../assets/temp-tiles.png" trans="eebdfa" width="704" height="384"/>
  </tileset>
- <layer id="1" name="0" width="6" height="3">
+ <layer id="2" name="0" width="6" height="5">
   <data encoding="csv">
 0,0,0,0,0,0,
-0,3758096409,2684354584,2684354584,536870937,0,
+0,3758096409,2684354584,2684354584,2684354583,0,
+0,0,0,0,24,0,
+0,2684354585,2684354584,2684354584,3221225495,0,
 0,0,0,0,0,0
 </data>
  </layer>

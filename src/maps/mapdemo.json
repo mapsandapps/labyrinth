@@ -1,10 +1,10 @@
-{ "height":3,
+{ "height":5,
  "infinite":false,
  "layers":[
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 3758096409, 2684354584, 2684354584, 536870937, 0, 0, 0, 0, 0, 0, 0],
-         "height":3,
-         "id":1,
+         "data":[0, 0, 0, 0, 0, 0, 0, 3758096409, 2684354584, 2684354584, 2684354583, 0, 0, 0, 0, 0, 24, 0, 0, 2684354585, 2684354584, 2684354584, 3221225495, 0, 0, 0, 0, 0, 0, 0],
+         "height":5,
+         "id":2,
          "name":"0",
          "opacity":1,
          "type":"tilelayer",
@@ -13,7 +13,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":2,
+ "nextlayerid":3,
  "nextobjectid":1,
  "orientation":"orthogonal",
  "renderorder":"right-down",

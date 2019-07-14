@@ -3,6 +3,7 @@ import { Path } from '../objects/path'
 import { Player } from '../objects/player'
 
 import { CONST } from '../helpers/const'
+import { sample } from 'lodash'
 
 export class GameScene extends Phaser.Scene {
   private currentLevel: string
@@ -60,7 +61,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.cameras.main.startFollow(this.player)
-    this.cameras.main.setBackgroundColor('#0db5eb')
+    this.cameras.main.setBackgroundColor(sample(CONST.BACKGROUND_COLORS))
   }
 
   update(): void {
