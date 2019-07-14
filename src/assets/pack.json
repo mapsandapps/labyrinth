@@ -12,6 +12,11 @@
       },
       {
         "type": "image",
+        "key": "debug-player",
+        "url": "./src/assets/debug-player.png"
+      },
+      {
+        "type": "image",
         "key": "tiles",
         "url": "./src/assets/temp-tiles-extruded.png"
       },

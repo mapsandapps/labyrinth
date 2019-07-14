@@ -6,6 +6,7 @@ export let CONST = {
   DEBUG: {
     AUTO_PLAY_ON: false,
     GRAPHICS_ON: false,
+    PLAYER: false
   },
   DIST_BW_NAV_POINTS: 40,
   LEVELS: [

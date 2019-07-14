@@ -12,7 +12,7 @@ export class Player extends Phaser.GameObjects.PathFollower {
   private pointerDown: boolean = false
 
   constructor(params) {
-    super(params.scene, params.scene.path, 0, 0, 'ball')
+    super(params.scene, params.scene.path, 0, 0, CONST.DEBUG.PLAYER ? 'debug-player' : 'ball')
     this.changeDepthAt = params.changeDepthAt
     this.labyrinth = params.scene.path
     this.init()
@@ -23,20 +23,20 @@ export class Player extends Phaser.GameObjects.PathFollower {
     this.setDepth(1)
 
     this.startFollow({
-      from: 0, // not sure why ts thinks these are required
-      to: 1,
       duration: this.labyrinth.getLength() * 2,
       // rotateToPath: true,
       rotationOffset: 90
     });
 
-    this.scene.anims.create({
-      key: 'roll',
-      frames: this.scene.anims.generateFrameNumbers('ball', { frames: [0, 1, 2, 3, 4] }),
-      frameRate: 1,
-      repeat: -1
-    })
-    this.anims.play('roll', true)
+    if (!CONST.DEBUG.PLAYER) {
+      this.scene.anims.create({
+        key: 'roll',
+        frames: this.scene.anims.generateFrameNumbers('ball', { frames: [0, 1, 2, 3, 4] }),
+        frameRate: 1,
+        repeat: -1
+      })
+      this.anims.play('roll', true)
+    }
 
     this.scene.input.on('pointermove', this.onPointerMove, this)
     this.scene.input.on('pointerdown', this.onPointerDown, this)
