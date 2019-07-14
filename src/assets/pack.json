@@ -26,6 +26,11 @@
         "url": "./src/assets/flare_01.png"
       },
       {
+        "type": "image",
+        "key": "star",
+        "url": "./src/assets/star.png"
+      },
+      {
         "type": "tilemapTiledJSON",
         "key": "map1",
         "url": "./src/maps/map1.json"

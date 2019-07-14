@@ -8,7 +8,9 @@ interface DepthChange {
 
 export class Player extends Phaser.GameObjects.PathFollower {
   private changeDepthAt: Array<DepthChange>
+  private emitter: Phaser.GameObjects.Particles.ParticleEmitter
   private labyrinth: Path
+  private particles: Phaser.GameObjects.Particles.ParticleEmitterManager
   private pointerDown: boolean = false
 
   constructor(params) {
@@ -38,14 +40,41 @@ export class Player extends Phaser.GameObjects.PathFollower {
       this.anims.play('roll', true)
     }
 
+    this.particles = new Phaser.GameObjects.Particles.ParticleEmitterManager(this.scene, 'star')
+
+    this.emitter = this.particles.createEmitter({
+      speed: 200,
+      scale: {
+        start: 0.4,
+        end: 0.0
+      },
+      lifespan: 1000,
+      blendMode: 'ADD',
+      tint: 0xb38b3f
+    })
+
+    this.particles.setDepth(1)
+    this.emitter.startFollow(this)
+
+    this.scene.add.existing(this.particles)
+
     this.scene.input.on('pointermove', this.onPointerMove, this)
     this.scene.input.on('pointerdown', this.onPointerDown, this)
     this.scene.input.on('pointerup', this.onPointerUp, this)
     // FIXME: need to reuse onPointerUp event handlers for more events (e.g. pointer leaves the view)
 
     if (!CONST.DEBUG.AUTO_PLAY_ON) {
-      this.pathTween.setTimeScale(0)
+      this.setSpeed(0)
     }
+  }
+
+  private setSpeed(speed: number): void {
+    if (speed) {
+      this.emitter.start()
+    } else {
+      this.emitter.stop()
+    }
+    this.pathTween.setTimeScale(speed)
   }
 
   private onPointerDown(): void {
@@ -55,6 +84,7 @@ export class Player extends Phaser.GameObjects.PathFollower {
   update(): void {
     if (this.changeDepthAt.length > 0 && this.pathTween.getValue() >= this.changeDepthAt[0].t) {
       this.setDepth(this.changeDepthAt[0].depth)
+      this.particles.setDepth(this.changeDepthAt[0].depth)
       this.changeDepthAt.shift()
     }
   }
@@ -69,11 +99,11 @@ export class Player extends Phaser.GameObjects.PathFollower {
 
     const precision = 180 - Math.abs(Phaser.Math.Angle.ShortestBetween(targetAngle, angleBetweenPlayerAndCursor)) // 0 - 180
     const speedModifier = Math.max(precision - 90, 0) / 90 // 0 - 1
-    this.pathTween.setTimeScale(speedModifier)
+    this.setSpeed(speedModifier)
   }
 
   private onPointerUp(): void {
     this.pointerDown = false
-    this.pathTween.setTimeScale(0)
+    this.setSpeed(0)
   }
 }
