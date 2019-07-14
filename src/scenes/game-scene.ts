@@ -1,4 +1,5 @@
 import { DebugGraphics } from '../objects/debug-graphics'
+import { Lighting } from '../objects/lighting'
 import { Path } from '../objects/path'
 import { Player } from '../objects/player'
 
@@ -59,6 +60,8 @@ export class GameScene extends Phaser.Scene {
         path: this.path
       })
     }
+
+    new Lighting(this)
 
     this.cameras.main.startFollow(this.player)
     this.cameras.main.setBackgroundColor(sample(CONST.BACKGROUND_COLORS))

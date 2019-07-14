@@ -16,6 +16,11 @@
         "url": "./src/assets/temp-tiles-extruded.png"
       },
       {
+        "type": "image",
+        "key": "light-particle",
+        "url": "./src/assets/flare_01.png"
+      },
+      {
         "type": "tilemapTiledJSON",
         "key": "map1",
         "url": "./src/maps/map1.json"
