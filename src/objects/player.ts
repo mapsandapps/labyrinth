@@ -43,13 +43,12 @@ export class Player extends Phaser.GameObjects.PathFollower {
     this.particles = new Phaser.GameObjects.Particles.ParticleEmitterManager(this.scene, 'star')
 
     this.emitter = this.particles.createEmitter({
-      speed: 200,
+      blendMode: 'ADD',
+      lifespan: 300,
       scale: {
         start: 0.4,
         end: 0.0
       },
-      lifespan: 1000,
-      blendMode: 'ADD',
       tint: 0xb38b3f
     })
 
@@ -71,6 +70,7 @@ export class Player extends Phaser.GameObjects.PathFollower {
   private setSpeed(speed: number): void {
     if (speed) {
       this.emitter.start()
+      this.emitter.setSpeed(speed * 200)
     } else {
       this.emitter.stop()
     }
