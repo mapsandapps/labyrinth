@@ -18,11 +18,9 @@ export class GameScene extends Phaser.Scene {
 
   constructor() {
     super({
-      key: "GameScene"
+      key: 'GameScene'
     })
   }
-
-  init(): void { }
 
   createTilemap(): void {
     this.map = this.make.tilemap({
@@ -91,6 +89,7 @@ export class GameScene extends Phaser.Scene {
     // this.scene.pause()
     this.scene.stop()
     if (this.currentLevelIndex >= CONST.LEVELS.length - 1) {
+      this.currentLevelIndex = 0
       this.scene.get('WinScene').scene.start()
     } else {
       this.currentLevelIndex++

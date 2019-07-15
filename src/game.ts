@@ -1,6 +1,6 @@
 import 'phaser';
 import { GameScene } from './scenes/game-scene';
-import { MenuScene } from './scenes/menu-scene';
+import { BootScene } from './scenes/boot-scene';
 import { WinScene } from './scenes/win-scene';
 
 let mobileSized: boolean = window.innerWidth < 800
@@ -11,7 +11,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: mobileSized ? window.innerHeight : 600,
   type: Phaser.WEBGL,
   parent: 'game',
-  scene: [MenuScene, GameScene, WinScene],
+  scene: [ BootScene, GameScene, WinScene ],
   input: {
     keyboard: true
   },
@@ -34,11 +34,11 @@ export class Game extends Phaser.Game {
   }
 
   preload(): void {
-    this.scene.start('MenuScene')
+    this.scene.start('BootScene')
   }
 }
 
 // when the page is loaded, create our game instance
 window.addEventListener('load', () => {
-  let game = new Game(config);
+  new Game(config);
 });
