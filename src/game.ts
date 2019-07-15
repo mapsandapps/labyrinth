@@ -9,7 +9,7 @@ let mobileSized: boolean = window.innerWidth < 800
 const config: Phaser.Types.Core.GameConfig = {
   width: mobileSized ? window.innerWidth : 800,
   height: mobileSized ? window.innerHeight : 600,
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   parent: 'game',
   scene: [MenuScene, GameScene, WinScene],
   input: {

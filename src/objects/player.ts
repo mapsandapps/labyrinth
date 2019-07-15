@@ -33,7 +33,9 @@ export class Player extends Phaser.GameObjects.PathFollower {
     if (!CONST.DEBUG.PLAYER) {
       this.scene.anims.create({
         key: 'roll',
-        frames: this.scene.anims.generateFrameNumbers('ball', { frames: [0, 1, 2, 3, 4] }),
+        frames: this.scene.anims.generateFrameNumbers('ball', {
+          frames: [0, 1, 2, 3, 4]
+        }),
         frameRate: 1,
         repeat: -1
       })

@@ -61,6 +61,13 @@ export class GameScene extends Phaser.Scene {
       })
     }
 
+    this.add.image(this.game.scale.width / 2, this.game.scale.height / 2, 'texture1')
+      .setAlpha(0.05)
+      .setBlendMode('ADD')
+      .setDepth(-2)
+      .setOrigin(0.5, 0.5)
+      .setScrollFactor(0.1)
+
     new Lighting(this)
 
     this.cameras.main.startFollow(this.player)

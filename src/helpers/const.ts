@@ -1,7 +1,8 @@
 export let CONST = {
   BACKGROUND_COLORS: [
     0x0a0f25,
-    0x0db5eb
+    0x0db5eb,
+    0x2e1734
   ],
   DEBUG: {
     AUTO_PLAY_ON: false,

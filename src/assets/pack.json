@@ -31,6 +31,16 @@
         "url": "./src/assets/star.png"
       },
       {
+        "type": "image",
+        "key": "texture1",
+        "url": "./src/assets/textures/texture1-white.png"
+      },
+      {
+        "type": "image",
+        "key": "texture2",
+        "url": "./src/assets/textures/texture2-white.png"
+      },
+      {
         "type": "tilemapTiledJSON",
         "key": "map1",
         "url": "./src/maps/map1.json"

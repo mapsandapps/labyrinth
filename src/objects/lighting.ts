@@ -1,47 +1,29 @@
-export class Lighting extends Phaser.GameObjects.Particles.ParticleEmitterManager {
+import { Light } from './light'
+
+import { random } from 'lodash'
+
+export class Lighting extends Phaser.GameObjects.Group {
+  private lights: Array<Light> = []
 
   constructor(scene) {
-    super(scene, 'light-particle')
+    super(scene)
 
     this.init(scene)
   }
 
+  replaceLight(index): void {
+    let light: Light = this.lights[index]
+    light.setX(random(-this.scene.game.scale.width * 0.2, this.scene.game.scale.width * 1.2))
+    light.setY(random(-this.scene.game.scale.height * 0.2, this.scene.game.scale.height * 1.2))
+
+    light.restart(this.scene)
+  }
+
   init(scene): void {
-    let lightArea = new Phaser.Geom.Rectangle(
-      -scene.game.config.width / 2,
-      -scene.game.config.height / 2,
-      scene.game.config.width + scene.map.widthInPixels,
-      scene.game.config.height + scene.map.heightInPixels
-    )
-
-    this.createEmitter({
-      x: 0,
-      y: 0,
-      alpha: {
-        start: 1,
-        end: 0,
-        ease: 'Quad.easeIn'
-      },
-      blendMode: 'ADD',
-      emitZone: {
-        type: 'random',
-        source: lightArea
-      },
-      frequency: 200,
-      gravityY: 0,
-      lifespan: 5000,
-      scale: {
-        start: 0,
-        end: 0.2,
-        ease: 'Quad.easeOut'
-      }
-    })
-
-    // splat out some lights to start with
-    this.emitParticle(5)
-
-    this.setDepth(-1)
-
-    scene.add.existing(this)
+    for (let i = 0; i < 10; i++) {
+      let lightX = random(-scene.game.scale.width * 0.2, scene.game.scale.width * 1.2)
+      let lightY = random(-scene.game.scale.height * 0.2, scene.game.scale.height * 1.2)
+      this.lights.push(new Light(scene, this, i, lightX, lightY))
+    }
   }
 }
