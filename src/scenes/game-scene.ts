@@ -40,7 +40,6 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     this.won = false
-    this.cameras.main.fadeIn(300)
     this.currentLevel = CONST.LEVELS[this.currentLevelIndex]
     this.createTilemap()
 
@@ -73,6 +72,7 @@ export class GameScene extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player)
     this.cameras.main.setBackgroundColor(sample(CONST.BACKGROUND_COLORS))
+    this.cameras.main.fadeIn(300)
   }
 
   update(): void {
@@ -92,7 +92,7 @@ export class GameScene extends Phaser.Scene {
     let cameraZoomX = this.game.scale.width / this.map.widthInPixels
     let cameraZoomY = this.game.scale.height / this.map.heightInPixels
 
-    this.cameras.main.pan(this.map.heightInPixels / 2, this.map.heightInPixels / 2, 2000)
+    this.cameras.main.pan(this.map.heightInPixels / 2, this.map.heightInPixels / 2, 1000)
     this.cameras.main.zoomTo(min([cameraZoomX, cameraZoomY]), 1000, 'Linear')
   }
 
