@@ -69,6 +69,16 @@
         "type": "json",
         "key": "directionsdemo",
         "url": "./src/maps/directionsdemo.json"
+      },
+      {
+        "type": "tilemapTiledJSON",
+        "key": "mapdemo2",
+        "url": "./src/maps/mapdemo2.json"
+      },
+      {
+        "type": "json",
+        "key": "directionsdemo2",
+        "url": "./src/maps/directionsdemo2.json"
       }
     ]
   }

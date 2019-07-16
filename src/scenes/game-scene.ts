@@ -4,13 +4,14 @@ import { Path } from '../objects/path'
 import { Player } from '../objects/player'
 
 import { CONST } from '../helpers/const'
-import { sample } from 'lodash'
+import { min, sample } from 'lodash'
 
 export class GameScene extends Phaser.Scene {
   private currentLevel: string
   private currentLevelIndex: number = 0
   private map: Phaser.Tilemaps.Tilemap
   private tileset: Phaser.Tilemaps.Tileset
+  private won: boolean = false
 
   private debugGraphics: DebugGraphics
   private path: Path
@@ -38,6 +39,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.won = false
+    this.cameras.main.fadeIn(300)
     this.currentLevel = CONST.LEVELS[this.currentLevelIndex]
     this.createTilemap()
 
@@ -84,16 +87,34 @@ export class GameScene extends Phaser.Scene {
     return this.player.pathTween.getValue()
   }
 
+  panAndZoomToShowLevel(): void {
+    this.cameras.main.stopFollow()
+    let cameraZoomX = this.game.scale.width / this.map.widthInPixels
+    let cameraZoomY = this.game.scale.height / this.map.heightInPixels
+
+    this.cameras.main.pan(this.map.heightInPixels / 2, this.map.heightInPixels / 2, 2000)
+    this.cameras.main.zoomTo(min([cameraZoomX, cameraZoomY]), 1000, 'Linear')
+  }
+
   win(): void {
-    // this.player.setActive(false)
-    // this.scene.pause()
-    this.scene.stop()
+    if (this.won) return
+
     if (this.currentLevelIndex >= CONST.LEVELS.length - 1) {
       this.currentLevelIndex = 0
+      this.scene.stop()
       this.scene.get('WinScene').scene.start()
     } else {
-      this.currentLevelIndex++
-      this.scene.restart()
+      this.panAndZoomToShowLevel()
+
+      // TODO: heart animation or something
+      this.time.delayedCall(2000, this.advanceLevel, null, this)
     }
+    this.won = true
+  }
+
+  advanceLevel(): void {
+    this.currentLevelIndex++
+    this.scene.stop()
+    this.scene.restart()
   }
 }

@@ -1,0 +1,14 @@
+{
+  "directions": [
+    { "x": 14, "y": 1, "tile": "startLeft" },
+    { "x": 7, "y": 1, "tile": "turnLeft", "radius": 7 },
+    { "x": 1, "y": 8, "tile": "turnLeft", "radius": 7 },
+    { "x": 8, "y": 14, "tile": "turnLeft", "radius": 7 },
+    { "x": 14, "y": 7, "tile": "turnLeft", "radius": 7 },
+    { "x": 1, "y": 1 }
+  ],
+  "changeDepthAt": [
+    { "t": 0, "depth": 1 },
+    { "t": 0.5, "depth": 3 }
+  ]
+}

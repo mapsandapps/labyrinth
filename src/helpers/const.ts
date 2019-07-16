@@ -12,6 +12,7 @@ export let CONST = {
   DIST_BW_NAV_POINTS: 40,
   LEVELS: [
     'demo',
+    'demo2',
     '1',
     '2'
   ],
