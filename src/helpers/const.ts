@@ -14,7 +14,8 @@ export let CONST = {
     'demo',
     'demo2',
     '1',
-    '2'
+    '2',
+    '4'
   ],
   MAX_SPEED: 30,
   TILE_SIZE: 64

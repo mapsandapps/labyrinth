@@ -12,7 +12,7 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
   }
 
   private init(scene): void {
-    var navPointsGraphics = new Phaser.GameObjects.Graphics(scene, {
+    let navPointsGraphics = new Phaser.GameObjects.Graphics(scene, {
       fillStyle: {
         color: 0x480a3e
       }
@@ -20,7 +20,7 @@ export class DebugGraphics extends Phaser.GameObjects.Group {
     navPointsGraphics.setDepth(101)
 
     const navPoints = scene.path.getNavPoints()
-    for (var i = 0; i < navPoints.length; i++) {
+    for (let i = 0; i < navPoints.length; i++) {
       navPointsGraphics.fillCircleShape(new Phaser.Geom.Circle(navPoints[i].x, navPoints[i].y, 1))
     }
 
