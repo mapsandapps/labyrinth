@@ -6,8 +6,8 @@
         "key": "ball",
         "url": "./src/assets/fire.png",
         "frameConfig": {
-          "frameHeight": 64,
-          "frameWidth": 64
+          "frameHeight": 96,
+          "frameWidth": 96
         }
       },
       {
