@@ -12,6 +12,7 @@ export class Player extends Phaser.GameObjects.PathFollower {
   private labyrinth: Path
   private particles: Phaser.GameObjects.Particles.ParticleEmitterManager
   private pointerDown: boolean = false
+  private previousSpeed: number = 0
 
   constructor(params) {
     super(params.scene, params.scene.path, 0, 0, CONST.DEBUG.PLAYER ? 'debug-player' : 'ball')
@@ -34,6 +35,14 @@ export class Player extends Phaser.GameObjects.PathFollower {
       this.scene.anims.create({
         key: 'roll',
         frames: this.scene.anims.generateFrameNumbers('ball', {
+          frames: [0, 1, 2, 3, 4, 5]
+        }),
+        // frameRate: 1,
+        repeat: -1
+      })
+      this.scene.anims.create({
+        key: 'idle',
+        frames: this.scene.anims.generateFrameNumbers('idle', {
           frames: [0, 1, 2, 3, 4, 5]
         }),
         // frameRate: 1,
@@ -71,11 +80,16 @@ export class Player extends Phaser.GameObjects.PathFollower {
 
   private setSpeed(speed: number): void {
     if (speed) {
-      this.anims.msPerFrame = (1 - speed) * 200 + 50
+      if (this.previousSpeed === 0) {
+        this.anims.play('roll')
+      }
+      // this.anims.msPerFrame = (1 - speed) * 200 + 50
       this.emitter.start()
       this.emitter.setSpeed(speed * 200)
+      this.previousSpeed = speed
     } else {
-      this.anims.msPerFrame = 1000
+      // this.anims.msPerFrame = 1000
+      this.anims.play('idle')
       this.emitter.stop()
     }
     this.pathTween.setTimeScale(speed)

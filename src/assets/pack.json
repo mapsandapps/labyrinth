@@ -4,7 +4,16 @@
       {
         "type": "spritesheet",
         "key": "ball",
-        "url": "./src/assets/fire.png",
+        "url": "./src/assets/moving.png",
+        "frameConfig": {
+          "frameHeight": 96,
+          "frameWidth": 96
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "idle",
+        "url": "./src/assets/idle.png",
         "frameConfig": {
           "frameHeight": 96,
           "frameWidth": 96
