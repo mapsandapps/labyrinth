@@ -26,7 +26,7 @@ export class Player extends Phaser.GameObjects.PathFollower {
 
     this.startFollow({
       duration: this.labyrinth.getLength() * 2,
-      // rotateToPath: true,
+      rotateToPath: true,
       rotationOffset: 90
     });
 
@@ -34,9 +34,9 @@ export class Player extends Phaser.GameObjects.PathFollower {
       this.scene.anims.create({
         key: 'roll',
         frames: this.scene.anims.generateFrameNumbers('ball', {
-          frames: [0, 1, 2, 3, 4]
+          frames: [0, 1, 2, 3, 4, 5]
         }),
-        frameRate: 1,
+        // frameRate: 1,
         repeat: -1
       })
       this.anims.play('roll', true)
@@ -71,9 +71,11 @@ export class Player extends Phaser.GameObjects.PathFollower {
 
   private setSpeed(speed: number): void {
     if (speed) {
+      this.anims.msPerFrame = (1 - speed) * 200 + 50
       this.emitter.start()
       this.emitter.setSpeed(speed * 200)
     } else {
+      this.anims.msPerFrame = 1000
       this.emitter.stop()
     }
     this.pathTween.setTimeScale(speed)

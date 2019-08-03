@@ -4,7 +4,7 @@
       {
         "type": "spritesheet",
         "key": "ball",
-        "url": "./src/assets/ball-dark.png",
+        "url": "./src/assets/fire.png",
         "frameConfig": {
           "frameHeight": 64,
           "frameWidth": 64
