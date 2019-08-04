@@ -1,0 +1,28 @@
+{
+  "directions": [
+    { "x": 1, "y": 7, "tile": "startUp" },
+    { "x": 1, "y": 5, "tile": "turnRight", "radius": 1 },
+    { "x": 3, "y": 5, "tile": "turnLeft", "radius": 1 },
+    { "x": 3, "y": 3, "tile": "turnLeft", "radius": 1 },
+    { "x": 1, "y": 3, "tile": "turnRight", "radius": 1 },
+    { "x": 1, "y": 1, "tile": "turnRight", "radius": 1 },
+    { "x": 4, "y": 1, "tile": "turnRight", "radius": 2 },
+    { "x": 5, "y": 7, "tile": "turnRight", "radius": 1 },
+    { "x": 2, "y": 7, "tile": "turnRight", "radius": 1 },
+    { "x": 2, "y": 4, "tile": "turnRight", "radius": 1 },
+    { "x": 7, "y": 4, "tile": "turnRight", "radius": 1 },
+    { "x": 7, "y": 6, "tile": "turnRight", "radius": 1 },
+    { "x": 4, "y": 6, "tile": "turnRight", "radius": 1 },
+    { "x": 4, "y": 2, "tile": "turnLeft", "radius": 1 },
+    { "x": 3, "y": 2, "tile": null }
+  ],
+  "changeDepthAt": [
+    { "t": 0.1, "depth": 3 },
+    { "t": 0.43, "depth": 1 },
+    { "t": 0.55, "depth": 3 },
+    { "t": 0.626, "depth": 1 },
+    { "t": 0.8, "depth": 3 },
+    { "t": 0.89, "depth": 1 }
+  ]
+}
+

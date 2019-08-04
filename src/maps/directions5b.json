@@ -1,0 +1,16 @@
+{
+  "directions": [
+    { "x": 5, "y": 3, "tile": "startLeft" },
+    { "x": 4, "y": 3, "tile": "turnLeft", "radius": 2 },
+    { "tile": "turnLeft", "radius": 6, "endTile": 5 },
+    { "tile": "turnLeft", "radius": 6, "startTile": 2 },
+    { "tile": "turnLeft", "radius": 4 },
+    { "tile": "turnLeft", "radius": 4, "endTile": 2 },
+    { "tile": "turnLeft", "radius": 4, "startTile": 2 },
+    { "x": 2, "y": 2, "tile": null }
+  ],
+  "changeDepthAt": [
+    { "t": 0, "depth": 3 }
+  ]
+}
+

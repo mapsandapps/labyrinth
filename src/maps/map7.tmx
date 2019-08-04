@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="9" height="9" tilewidth="64" tileheight="64" infinite="0" nextlayerid="23" nextobjectid="1">
+ <tileset firstgid="1" name="temp-tiles" tilewidth="64" tileheight="64" tilecount="66" columns="11">
+  <image source="../assets/temp-tiles.png" trans="eebdfa" width="704" height="384"/>
+ </tileset>
+ <layer id="16" name="0" width="9" height="9">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,
+0,23,2684354584,2684354584,1,0,0,0,0,
+0,24,0,2684354585,2684354583,3758096385,0,0,0,
+0,1610612759,2684354584,2684354583,3221225496,3221225496,0,0,0,
+0,0,23,2684354584,24,2684354584,2684354584,2684354583,0,
+0,23,2684354584,3221225495,3221225496,3221225496,0,24,0,
+0,24,24,0,1610612759,3221225496,2684354584,3221225495,0,
+0,25,1610612759,1610612760,1610612760,3221225495,0,0,0,
+0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="17" name="2" width="9" height="9">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,2,0,0,0,
+0,0,0,0,12,0,0,0,0,
+0,0,0,0,0,0,0,0,0,
+0,0,0,24,2684354584,3221225496,0,0,0,
+0,0,24,0,0,0,0,0,0,
+0,0,0,0,0,2684354584,0,0,0,
+0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

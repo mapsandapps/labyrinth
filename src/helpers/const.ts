@@ -13,6 +13,7 @@ export let CONST = {
   LEVELS: [
     'demo',
     'demo2',
+    '7',
     '1',
     '2',
     '4'

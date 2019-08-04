@@ -4,7 +4,7 @@
       {
         "type": "spritesheet",
         "key": "ball",
-        "url": "./src/assets/moving.png",
+        "url": "./src/assets/snow.png",
         "frameConfig": {
           "frameHeight": 96,
           "frameWidth": 96
@@ -14,6 +14,15 @@
         "type": "spritesheet",
         "key": "idle",
         "url": "./src/assets/idle.png",
+        "frameConfig": {
+          "frameHeight": 96,
+          "frameWidth": 96
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "snow",
+        "url": "./src/assets/snow.png",
         "frameConfig": {
           "frameHeight": 96,
           "frameWidth": 96
@@ -98,6 +107,16 @@
         "type": "json",
         "key": "directionsdemo2",
         "url": "./src/maps/directionsdemo2.json"
+      },
+      {
+        "type": "tilemapTiledJSON",
+        "key": "map7",
+        "url": "./src/maps/map7.json"
+      },
+      {
+        "type": "json",
+        "key": "directions7",
+        "url": "./src/maps/directions7.json"
       }
     ]
   }

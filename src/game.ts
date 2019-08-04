@@ -11,7 +11,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: mobileSized ? window.innerHeight : 600,
   type: Phaser.WEBGL,
   parent: 'game',
-  scene: [ BootScene, GameScene, WinScene ],
+  scene: [BootScene, GameScene, WinScene],
   input: {
     keyboard: true
   },
